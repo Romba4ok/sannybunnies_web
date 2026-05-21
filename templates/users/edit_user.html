@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0">Редактировать пользователя</h1>
+      <p class="text-muted mb-0">Измените данные пользователя.</p>
+    </div>
+  </div>
+
+  <form method="post" action="{{ url_for('users.edit', user_id=user.id) }}" enctype="multipart/form-data" class="card p-4">
+    <div class="row g-3 mb-4">
+      <div class="col-md-2">
+        <label for="name" class="form-label">Имя</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}" placeholder="Имя" required />
+      </div>
+      <div class="col-md-2">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" placeholder="Email" required />
+      </div>
+      <div class="col-md-2">
+        <label for="phone" class="form-label">Телефон</label>
+        <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone }}" placeholder="+7 (XXX) XXX XX XX" />
+      </div>
+      <div class="col-md-2">
+        <label for="role" class="form-label">Роль</label>
+        <select class="form-select" id="role" name="role" required>
+          <option value="user" {% if user.role == 'user' or user.role == 'parent' %}selected{% endif %}>user</option>
+          <option value="teacher" {% if user.role == 'teacher' %}selected{% endif %}>teacher</option>
+          <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>admin</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label for="password" class="form-label">Новый пароль (оставьте пустым, если не менять)</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Новый пароль" />
+      </div>
+      <div class="col-md-2">
+        <label for="photo" class="form-label">Новая аватарка</label>
+        <input type="file" class="form-control" id="photo" name="photo" accept="image/*" />
+        {% if user.photo_url %}
+          <small class="text-muted">Текущая: <a href="{{ user.photo_url }}" target="_blank">Посмотреть</a></small>
+        {% endif %}
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+  </form>
+{% endblock %}

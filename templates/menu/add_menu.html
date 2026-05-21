@@ -1,0 +1,165 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0">Создать меню питания</h1>
+      <p class="text-muted mb-0">Добавьте блюда по дням недели с временем подачи, калориями, фото и ингредиентами.</p>
+    </div>
+  </div>
+
+  <form method="post" action="{{ url_for('menu.add') }}" enctype="multipart/form-data" class="card p-4">
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label for="group_id" class="form-label">Группа</label>
+        <select class="form-select" id="group_id" name="group_id" required>
+          <option value="">Выберите группу</option>
+          {% for group in groups %}
+            <option value="{{ group.id }}" {% if group.id == selected_group_id %}selected{% endif %}>{{ group.name or group.id }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    {% for day_key, day_name in day_labels.items() %}
+      <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="mb-0">{{ day_name }}</h5>
+            <div class="text-muted">Добавьте одно или несколько блюд на {{ day_name.lower() }}.</div>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-light" onclick="addMenuRow('{{ day_key }}')">Добавить блюдо</button>
+        </div>
+        <div id="{{ day_key }}_items">
+          <div class="menu-item card p-3 mb-3">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-2">
+                <label class="form-label">Время</label>
+                <input type="time" class="form-control" name="{{ day_key }}_time[]" />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Блюдо</label>
+                <input type="text" class="form-control" name="{{ day_key }}_meal[]" placeholder="Название блюда" />
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">Калории</label>
+                <input type="text" class="form-control" name="{{ day_key }}_kcal[]" placeholder="ккал" />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Фото</label>
+                <input type="file" class="form-control" name="{{ day_key }}_photo[]" accept="image/*" />
+              </div>
+              <div class="col-md-2">
+                <button type="button" class="btn btn-outline-danger w-100" onclick="removeMenuRow(this)">Удалить</button>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Описание</label>
+                <textarea class="form-control" name="{{ day_key }}_description[]" rows="2" placeholder="Описание блюда"></textarea>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Ингредиенты</label>
+                <div class="ingredients-block">
+                  <div class="input-group mb-2 ingredient-row">
+                    <input type="text" class="form-control ingredient-input" placeholder="Ингредиент" oninput="updateIngredientsField(this)" />
+                    <button type="button" class="btn btn-outline-danger" onclick="removeIngredientRow(this)">×</button>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-light mt-2" onclick="addIngredientRow(this)">Добавить ингредиент</button>
+                <input type="hidden" name="{{ day_key }}_ingredients[]" class="ingredients-value" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="d-flex gap-3">
+      <button type="submit" class="btn btn-primary">Создать меню</button>
+      <a href="{{ url_for('menu.index') }}" class="btn btn-outline-light">Отмена</a>
+    </div>
+  </form>
+
+  <script>
+    function removeMenuRow(button) {
+      const row = button.closest('.menu-item');
+      if (row) row.remove();
+    }
+
+    function addIngredientRow(button, value = '') {
+      const row = button.closest('.menu-item');
+      const block = row.querySelector('.ingredients-block');
+      const ingredientRow = document.createElement('div');
+      ingredientRow.className = 'input-group mb-2 ingredient-row';
+      ingredientRow.innerHTML = `
+        <input type="text" class="form-control ingredient-input" placeholder="Ингредиент" value="${value.replace(/"/g, '&quot;')}" oninput="updateIngredientsField(this)" />
+        <button type="button" class="btn btn-outline-danger" onclick="removeIngredientRow(this)">×</button>
+      `;
+      block.appendChild(ingredientRow);
+      updateIngredientsField(block);
+    }
+
+    function removeIngredientRow(button) {
+      const ingredientRow = button.closest('.ingredient-row');
+      if (!ingredientRow) return;
+      const row = ingredientRow.closest('.menu-item');
+      ingredientRow.remove();
+      updateIngredientsField(row);
+    }
+
+    function updateIngredientsField(element) {
+      const row = element.closest('.menu-item');
+      if (!row) return;
+      const hidden = row.querySelector('.ingredients-value');
+      const values = Array.from(row.querySelectorAll('.ingredient-input'))
+        .map(input => input.value.trim())
+        .filter(Boolean);
+      hidden.value = values.join('\n');
+    }
+
+    function addMenuRow(day) {
+      const container = document.getElementById(day + '_items');
+      if (!container) return;
+      const row = document.createElement('div');
+      row.className = 'menu-item card p-3 mb-3';
+      row.innerHTML = `
+        <div class="row g-3 align-items-end">
+          <div class="col-md-2">
+            <label class="form-label">Время</label>
+            <input type="time" class="form-control" name="${day}_time[]" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Блюдо</label>
+            <input type="text" class="form-control" name="${day}_meal[]" placeholder="Название блюда" />
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Калории</label>
+            <input type="text" class="form-control" name="${day}_kcal[]" placeholder="ккал" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Фото</label>
+            <input type="file" class="form-control" name="${day}_photo[]" accept="image/*" />
+          </div>
+          <div class="col-md-2">
+            <button type="button" class="btn btn-outline-danger w-100" onclick="removeMenuRow(this)">Удалить</button>
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">Описание</label>
+            <textarea class="form-control" name="${day}_description[]" rows="2" placeholder="Описание блюда"></textarea>
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">Ингредиенты</label>
+            <div class="ingredients-block">
+              <div class="input-group mb-2 ingredient-row">
+                <input type="text" class="form-control ingredient-input" placeholder="Ингредиент" oninput="updateIngredientsField(this)" />
+                <button type="button" class="btn btn-outline-danger" onclick="removeIngredientRow(this)">×</button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-light mt-2" onclick="addIngredientRow(this)">Добавить ингредиент</button>
+            <input type="hidden" name="${day}_ingredients[]" class="ingredients-value" />
+          </div>
+        </div>
+      `;
+      container.appendChild(row);
+    }
+  </script>
+{% endblock %}

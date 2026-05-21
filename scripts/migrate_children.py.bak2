@@ -1,0 +1,29 @@
+from firebase_admin_service import get_firestore, init_firebase, normalize_document
+
+
+def migrate(copy_only=True):
+    init_firebase()
+db = get_firestore()
+migrated = []
+for doc in db.collection_group('children').stream():
+
+        parent_ref = doc.reference.parent.parent
+if parent_ref is None:
+            continue
+data = doc.to_dict() or {}
+child_id = doc.id
+parent_id = parent_ref.id
+
+data['parent_id'] = parent_id
+
+top_ref = db.collection('children').document(child_id)
+top_ref.set(data)
+migrated.append(child_id)
+if not copy_only:
+
+            doc.reference.delete()
+print(f"Migrated {len(migrated)} children: {migrated}")
+
+
+if __name__ == '__main__':
+    migrate(copy_only=True)

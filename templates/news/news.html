@@ -1,0 +1,40 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0">Новости</h1>
+      <p class="text-muted mb-0">Список новостей. Создайте новую новость на отдельной вкладке.</p>
+    </div>
+    <a href="{{ url_for('news.add_form') }}" class="btn btn-primary">Добавить новость</a>
+  </div>
+
+  {% if items %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      {% for item in items %}
+        <div class="col">
+          <div class="card h-100">
+            {% if item.photo_url %}
+              <img src="{{ item.photo_url }}" class="card-img-top" alt="Фото новости" style="height: 200px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title">{{ item.headline or 'Новость' }}</h5>
+              <p class="card-text">{{ item.body or 'Описание отсутствует.' }}</p>
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+              <small class="text-muted">{{ item.createdAt or item.created_at or '-' }}</small>
+              <div>
+                <a href="{{ url_for('news.edit', news_id=item.id) }}" class="btn btn-sm btn-outline-light">Редактировать</a>
+                <form method="post" action="{{ url_for('news.delete', news_id=item.id) }}" class="d-inline" onsubmit="return confirm('Удалить новость?');">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-muted">Пока нет новостей. Создайте первую новость.</div>
+  {% endif %}
+{% endblock %}

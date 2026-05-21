@@ -1,0 +1,39 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0">Часто задаваемые вопросы</h1>
+      <p class="text-muted mb-0">Добавляйте и редактируйте вопросы и ответы.</p>
+    </div>
+    <a href="{{ url_for('faq.add_form') }}" class="btn btn-primary">Добавить FAQ</a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Вопрос</th>
+          <th>Ответ</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+          <tr>
+            <td>{{ item.question or '-' }}</td>
+            <td>{{ item.answer or '-' }}</td>
+            <td>
+              <div class="d-flex gap-2">
+                <a href="{{ url_for('faq.edit', faq_id=item.id) }}" class="btn btn-sm btn-outline-primary">Редактировать</a>
+                <form method="post" action="{{ url_for('faq.delete', faq_id=item.id) }}" class="m-0" onsubmit="return confirm('Вы уверены, что хотите удалить этот FAQ?')">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

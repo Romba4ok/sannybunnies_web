@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0">Редактировать новость</h1>
+      <p class="text-muted mb-0">Измените заголовок, описание или фото новости.</p>
+    </div>
+  </div>
+
+  <form method="post" action="{{ url_for('news.edit', news_id=news.id) }}" enctype="multipart/form-data" class="card p-4 mb-4">
+    <div class="row g-3 mb-4">
+      <div class="col-md-12">
+        <label for="headline" class="form-label">Заголовок</label>
+        <input type="text" class="form-control" id="headline" name="headline" value="{{ news.headline }}" placeholder="Заголовок новости" required />
+      </div>
+      <div class="col-md-12">
+        <label for="body" class="form-label">Описание</label>
+        <textarea class="form-control" id="body" name="body" placeholder="Текст новости" rows="6">{{ news.body }}</textarea>
+      </div>
+      <div class="col-md-12">
+        <label for="photo" class="form-label">Фото (опционально, заменит текущее)</label>
+        <input type="file" class="form-control" id="photo" name="photo" accept="image/*" />
+        {% if news.photo_url %}
+          <small class="text-muted">Текущее фото: <a href="{{ news.photo_url }}" target="_blank">Посмотреть</a></small>
+        {% endif %}
+      </div>
+    </div>
+    <div class="d-flex gap-3">
+      <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+      <a href="{{ url_for('news.index') }}" class="btn btn-outline-light">Отмена</a>
+    </div>
+  </form>
+{% endblock %}

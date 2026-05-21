@@ -1,0 +1,90 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0">Создать расписание</h1>
+      <p class="text-muted mb-0">Добавьте расписание недели для новой группы.</p>
+    </div>
+  </div>
+
+  <form method="post" action="{{ url_for('schedule.add') }}" class="card p-4">
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label for="group_id" class="form-label">Группа</label>
+        <select class="form-select" id="group_id" name="group_id" required>
+          <option value="">Выберите группу</option>
+          {% for group in groups %}
+            <option value="{{ group.id }}">{{ group.name or group.id }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    {% set day_labels = {
+      'monday': 'Понедельник',
+      'tuesday': 'Вторник',
+      'wednesday': 'Среда',
+      'thursday': 'Четверг',
+      'friday': 'Пятница',
+      'saturday': 'Суббота',
+      'sunday': 'Воскресенье',
+    } %}
+
+    {% for day, label in day_labels.items() %}
+      <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="mb-0">{{ label }}</h5>
+            <div class="text-muted">Добавьте элементы для дня.</div>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-light" onclick="addEventRow('{{ day }}')">Добавить событие</button>
+        </div>
+        <div id="{{ day }}_items">
+          <div class="schedule-item row g-2 align-items-center mb-2">
+            <div class="col-auto" style="min-width: 150px;">
+              <input type="time" class="form-control" name="{{ day }}_time[]" />
+            </div>
+            <div class="col">
+              <input type="text" class="form-control" name="{{ day }}_title[]" placeholder="Событие" />
+            </div>
+            <div class="col-auto">
+              <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEventRow(this)">Удалить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="d-flex gap-3">
+      <button type="submit" class="btn btn-primary">Создать расписание</button>
+      <a href="{{ url_for('schedule.index') }}" class="btn btn-outline-light">Отмена</a>
+    </div>
+  </form>
+
+  <script>
+    function removeEventRow(button) {
+      const row = button.closest('.schedule-item');
+      if (row) row.remove();
+    }
+
+    function addEventRow(day) {
+      const container = document.getElementById(day + '_items');
+      if (!container) return;
+      const row = document.createElement('div');
+      row.className = 'schedule-item row g-2 align-items-center mb-2';
+      row.innerHTML = `
+        <div class="col-auto" style="min-width: 150px;">
+          <input type="time" class="form-control" name="${day}_time[]" />
+        </div>
+        <div class="col">
+          <input type="text" class="form-control" name="${day}_title[]" placeholder="Событие" />
+        </div>
+        <div class="col-auto">
+          <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeEventRow(this)">Удалить</button>
+        </div>
+      `;
+      container.appendChild(row);
+    }
+  </script>
+{% endblock %}

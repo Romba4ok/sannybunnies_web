@@ -1,0 +1,277 @@
+import os
+from firebase_admin import credentials, firestore, initialize_app, auth, storage
+import firebase_admin
+from datetime import datetime
+
+from config import FIREBASE_CREDENTIALS, FIREBASE_STORAGE_BUCKET
+
+firebase_app = None
+
+
+def init_firebase():
+    global firebase_app
+if firebase_app is None:
+        if not os.path.exists(FIREBASE_CREDENTIALS):
+            raise FileNotFoundError(
+f"Firebase credentials not found: {FIREBASE_CREDENTIALS}. "
+"Скопируй сервисный файл JSON и укажи путь в переменной FIREBASE_CREDENTIALS"
+)
+cred = credentials.Certificate(FIREBASE_CREDENTIALS)
+firebase_app = initialize_app(cred)
+return firebase_app
+
+
+def get_firestore():
+    init_firebase()
+return firestore.client()
+
+
+def normalize_value(value):
+    if isinstance(value, datetime):
+        return value.isoformat()
+if isinstance(value, firestore.SERVER_TIMESTAMP.__class__):
+        return str(value)
+return value
+
+
+def normalize_document(doc):
+    data = doc.to_dict() if doc is not None else {}
+normalized = {}
+for key, value in (data or {}).items():
+        if hasattr(value, 'isoformat'):
+            normalized[key] = value.isoformat()
+else:
+            normalized[key] = value
+normalized['id'] = doc.id if doc is not None else None
+return normalized
+
+
+def get_collection_items(collection_name):
+    db = get_firestore()
+docs = db.collection(collection_name).stream()
+return [normalize_document(doc) for doc in docs]
+
+
+def get_users_by_role(role):
+    users = get_collection_items('users')
+if role == 'parent':
+        return [u for u in users if u.get('role') in ['parent', 'user']]
+return [u for u in users if u.get('role') == role]
+
+
+def get_children_with_parent():
+    db = get_firestore()
+children = []
+
+docs = db.collection('children').stream()
+for doc in docs:
+        child = normalize_document(doc)
+
+parent_id = child.get('parent_id') or child.get('parent_uid')
+if parent_id:
+            parent_doc = db.collection('users').document(parent_id).get()
+if parent_doc.exists:
+                parent_data = parent_doc.to_dict() or {}
+parent_name = parent_data.get('name') or parent_data.get('email') or parent_id
+child['parent_name'] = parent_name
+child['parent_id'] = parent_id
+child['parent_phone'] = parent_data.get('phone') or parent_data.get('phoneNumber')
+child['parent_photo'] = parent_data.get('photoUrl') or parent_data.get('photo_url')
+child['parent_email'] = parent_data.get('email')
+if child.get('group_id'):
+            group_doc = db.collection('groups').document(child['group_id']).get()
+if group_doc.exists:
+                group_data = group_doc.to_dict() or {}
+child['group_name'] = group_data.get('name')
+if not child.get('name'):
+            child['name'] = child.get('child_name') or child.get('first_name') or child.get('last_name') or child.get('email')
+children.append(child)
+return children
+
+
+def get_document(collection_name, doc_id):
+    db = get_firestore()
+doc = db.collection(collection_name).document(doc_id).get()
+return normalize_document(doc) if doc.exists else None
+
+
+def set_child_group_id(*args):
+    """
+    Backwards-compatible setter for child's `group_id`.
+
+    Supported signatures:
+    - set_child_group_id(child_id)
+    - set_child_group_id(child_id, group_id)
+    - legacy: set_child_group_id(parent_id, child_id, group_id)
+    """
+if len(args) == 1:
+        child_id = args[0]
+group_id = None
+elif len(args) == 2:
+        child_id, group_id = args
+elif len(args) == 3:
+
+        _, child_id, group_id = args
+else:
+        raise TypeError("set_child_group_id accepts 1..3 positional arguments")
+
+db = get_firestore()
+child_ref = db.collection('children').document(child_id)
+child_doc = child_ref.get()
+if not child_doc.exists:
+        return
+if group_id is None:
+        child_ref.update({'group_id': firestore.DELETE_FIELD})
+else:
+        child_ref.update({'group_id': group_id})
+
+
+def update_child(child_id, data):
+    db = get_firestore()
+child_ref = db.collection('children').document(child_id)
+child_doc = child_ref.get()
+if not child_doc.exists:
+        return
+child_ref.update(data)
+
+
+
+def create_document(collection_name, data):
+    db = get_firestore()
+doc_ref = db.collection(collection_name).document()
+doc_ref.set(data)
+return doc_ref.id
+
+
+def update_document(collection_name, doc_id, data):
+    db = get_firestore()
+db.collection(collection_name).document(doc_id).update(data)
+
+
+def update_user_password(uid, password):
+    auth.update_user(uid, password=password)
+
+
+def set_document(collection_name, doc_id, data):
+    db = get_firestore()
+db.collection(collection_name).document(doc_id).set(data)
+
+
+def delete_document(collection_name, doc_id):
+    db = get_firestore()
+db.collection(collection_name).document(doc_id).delete()
+
+
+def query_user_by_email(email):
+    db = get_firestore()
+query = db.collection('users').where('email', '==', email).limit(1).stream()
+for doc in query:
+        return normalize_document(doc)
+return None
+
+
+def create_teacher_user(email, password, name, position, description, photo_url=None):
+
+    user = auth.create_user(
+email=email,
+password=password,
+display_name=name,
+)
+
+
+user_data = {
+'uid': user.uid,
+'name': name,
+'email': email,
+'role': 'teacher',
+'position': position,
+'description': description,
+'createdAt': firestore.SERVER_TIMESTAMP,
+}
+if photo_url:
+        user_data['photo_url'] = photo_url
+
+set_document('users', user.uid, user_data)
+
+return user.uid
+
+
+def update_teacher(doc_id, name, position, description, photo_url=None):
+    update_data = {
+'name': name,
+'position': position,
+'description': description,
+}
+if photo_url:
+        update_data['photo_url'] = photo_url
+
+update_document('users', doc_id, update_data)
+
+
+def delete_teacher(doc_id):
+    user_doc = get_document('users', doc_id)
+if user_doc:
+
+        auth.delete_user(user_doc['uid'])
+
+delete_document('users', doc_id)
+
+
+def create_child(parent_id, child_data):
+    db = get_firestore()
+
+child_data = dict(child_data or {})
+
+child_data['parent_id'] = parent_id
+child_data['parent_uid'] = parent_id
+doc_ref = db.collection('children').document()
+doc_ref.set(child_data)
+return doc_ref.id
+
+
+
+
+
+def remove_child_from_group(group_id, child_id):
+    group = get_document('groups', group_id)
+if group:
+        children_uids = group.get('children_uids', [])
+if child_id in children_uids:
+            children_uids.remove(child_id)
+update_document('groups', group_id, {'children_uids': children_uids})
+
+
+def upload_photo_to_storage(file, folder_path):
+    """
+    Upload a photo to Firebase Storage.
+    :param file: FileStorage object from request.files
+    :param folder_path: Path in storage bucket (e.g., 'profile_photos/user_id')
+    :return: Download URL or None if upload fails
+    """
+if not file or not file.filename:
+        return None
+
+try:
+        init_firebase()
+bucket = storage.bucket(FIREBASE_STORAGE_BUCKET)
+
+
+blob_name = f"{folder_path}/{file.filename}"
+blob = bucket.blob(blob_name)
+
+
+blob.upload_from_string(
+file.read(),
+content_type=file.content_type
+)
+
+
+blob.make_public()
+return blob.public_url
+except Exception as e:
+        print(f"Error uploading file to Firebase Storage: {e}")
+return None
+
+
+
+

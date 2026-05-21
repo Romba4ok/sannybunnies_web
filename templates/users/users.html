@@ -1,0 +1,141 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <form method="post" action="{{ url_for('users.add') }}" enctype="multipart/form-data" class="mb-4">
+    <div class="row g-3">
+      <div class="col-md-2">
+        <label for="name" class="form-label">Имя</label>
+        <input type="text" class="form-control" id="name" name="name" placeholder="Имя" required />
+      </div>
+      <div class="col-md-2">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Email" required />
+      </div>
+      <div class="col-md-2">
+        <label for="phone" class="form-label">Телефон</label>
+        <input type="tel" class="form-control" id="phone" name="phone" placeholder="+7 (XXX) XXX XX XX" />
+      </div>
+      <div class="col-md-2">
+        <label for="role" class="form-label">Роль</label>
+        <select class="form-select" id="role" name="role">
+          <option value="user">user</option>
+          <option value="teacher">teacher</option>
+          <option value="admin">admin</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label for="password" class="form-label">Пароль</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Пароль" required />
+      </div>
+      <div class="col-md-2">
+        <label for="photo" class="form-label">Аватарка</label>
+        <input type="file" class="form-control" id="photo" name="photo" accept="image/*" />
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Добавить пользователя</button>
+  </form>
+
+  <div class="table-responsive">
+    {% if admins %}
+      <h2 class="mt-5">Админы</h2>
+      <ul class="list-group mb-4">
+        {% for user in admins %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              {% if user.photoUrl or user.photo_url %}
+                <img src="{{ user.photoUrl or user.photo_url }}" alt="Аватарка" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;" />
+              {% endif %}
+              <div>
+                <strong>{{ user.name }}</strong><br />
+                {{ user.email }}<br />
+                {{ user.phone or '-' }}
+              </div>
+              <span class="badge bg-secondary ms-3">{{ user.role }}</span>
+            </div>
+            <div>
+              <a href="{{ url_for('users.edit', user_id=user.id) }}" class="btn btn-sm btn-outline-light">Редактировать</a>
+              <form method="post" action="{{ url_for('users.delete', user_id=user.id) }}" class="m-0" onsubmit="event.stopPropagation()">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+              </form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if teachers %}
+      <h2 class="mt-5">Воспитатели</h2>
+      <ul class="list-group mb-4">
+        {% for user in teachers %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              {% if user.photoUrl or user.photo_url %}
+                <img src="{{ user.photoUrl or user.photo_url }}" alt="Аватарка" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;" />
+              {% endif %}
+              <div>
+                <strong>{{ user.name }}</strong><br />
+                {{ user.email }}<br />
+                {{ user.phone or '-' }}
+              </div>
+              <span class="badge bg-secondary ms-3">{{ user.role }}</span>
+            </div>
+            <div>
+              <a href="{{ url_for('users.edit', user_id=user.id) }}" class="btn btn-sm btn-outline-light">Редактировать</a>
+              <form method="post" action="{{ url_for('users.delete', user_id=user.id) }}" class="m-0" onsubmit="event.stopPropagation()">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+              </form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if parents %}
+      <h2 class="mt-5">Обычные пользователи</h2>
+      <ul class="list-group mb-4">
+        {% for user in parents %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              {% if user.photoUrl or user.photo_url %}
+                <img src="{{ user.photoUrl or user.photo_url }}" alt="Аватарка" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;" />
+              {% endif %}
+              <div>
+                <strong>{{ user.name }}</strong><br />
+                {{ user.email }}<br />
+                {{ user.phone or '-' }}
+              </div>
+              <span class="badge bg-secondary ms-3">{{ user.role }}</span>
+            </div>
+            <div>
+              <a href="{{ url_for('users.edit', user_id=user.id) }}" class="btn btn-sm btn-outline-light">Редактировать</a>
+              <form method="post" action="{{ url_for('users.delete', user_id=user.id) }}" class="m-0" onsubmit="event.stopPropagation()">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+              </form>
+            </div>
+          </li>
+          {% set parent_children = children | selectattr('parent_id', 'equalto', user.id) | list %}
+          {% if parent_children %}
+            <ul class="list-group mt-2 mb-2">
+              {% for child in parent_children %}
+                <li class="list-group-item d-flex justify-content-between align-items-center ms-4">
+                  <div class="d-flex align-items-center">
+                    {% if child.photoUrl %}
+                      <img src="{{ child.photoUrl }}" alt="Фото ребенка" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;" />
+                    {% endif %}
+                    <div>
+                      <strong>{{ child.name }}</strong><br />
+                      {{ child.birthDate or '-' }} | {{ child.gender or '-' }}
+                    </div>
+                  </div>
+                  <div>
+                    <a href="{{ url_for('users.edit_child', child_id=child.id) }}" class="btn btn-sm btn-outline-light">Редактировать</a>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+{% endblock %}

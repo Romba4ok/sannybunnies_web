@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ru" data-bs-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Редактировать воспитателя</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <style>
+      :root {
+        --bs-body-bg: #09090d;
+        --bs-body-color: #efe8ff;
+        --bs-primary: #9d6fff;
+        --bs-border-color: rgba(145, 95, 255, 0.18);
+      }
+      body { font-family: Inter, Arial, sans-serif; }
+      .form-box { max-width: 400px; background: #12101f; border: 1px solid var(--bs-border-color); border-radius: 24px; padding: 32px; box-shadow: 0 22px 50px rgba(0, 0, 0, 0.32); }
+      .form-control { background: #10101a; color: #f5efff; border: 1px solid var(--bs-border-color); }
+      .form-control:focus { border-color: var(--bs-primary); box-shadow: 0 0 0 0.2rem rgba(157, 111, 255, 0.25); }
+      .btn { border-radius: 14px; font-weight: 700; }
+      .btn-primary { background: #2f2f4a; border-color: rgba(145, 95, 255, 0.22); }
+      .btn-primary:hover { background: #45466f; }
+      .alert { color: #f8b6ff; }
+      img { max-width: 100px; max-height: 100px; border-radius: 16px; border: 1px solid rgba(145, 94, 255, 0.3); }
+    </style>
+  </head>
+  <body class="d-flex align-items-center justify-content-center min-vh-100">
+    <div class="form-box">
+      <h1 class="text-center mb-4">Редактировать воспитателя</h1>
+      {% with messages = get_flashed_messages(category_filter=['error']) %}
+        {% if messages %}
+          <div class="alert alert-danger">{{ messages[0] }}</div>
+        {% endif %}
+      {% endwith %}
+      <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="name" class="form-label">Имя</label>
+          <input type="text" class="form-control" id="name" name="name" value="{{ teacher.name }}" required />
+        </div>
+        <div class="mb-3">
+          <label for="position" class="form-label">Должность</label>
+          <input type="text" class="form-control" id="position" name="position" value="{{ teacher.position }}" />
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Описание</label>
+          <textarea class="form-control" id="description" name="description" rows="3">{{ teacher.description }}</textarea>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Новый пароль (оставьте пустым, если не менять)</label>
+          <input type="password" class="form-control" id="password" name="password" placeholder="Новый пароль" />
+        </div>
+        <div class="mb-3">
+          <label for="photo" class="form-label">Фото профиля</label>
+          {% if teacher.photo_url %}
+            <img src="{{ teacher.photo_url }}" alt="Фото" class="d-block mb-2" />
+          {% endif %}
+          <input type="file" class="form-control" id="photo" name="photo" accept="image/*" />
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Обновить</button>
+      </form>
+      <p class="text-center mt-3"><a href="{{ url_for('teachers.index') }}" class="text-decoration-none">← Назад к списку</a></p>
+    </div>
+  </body>
+</html>

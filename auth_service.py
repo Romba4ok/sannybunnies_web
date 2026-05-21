@@ -1,0 +1,62 @@
+import requests
+
+from config import FIREBASE_API_KEY
+from firebase_admin_service import query_user_by_email
+
+
+class AuthError(Exception):
+    pass
+
+
+def sign_in_with_email_and_password(email: str, password: str) -> dict:
+    if not FIREBASE_API_KEY:
+        raise AuthError('FIREBASE_API_KEY не задан в config.py или .env')
+
+    url = (
+    f'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={FIREBASE_API_KEY}'
+    )
+    payload = {
+    'email': email,
+    'password': password,
+    'returnSecureToken': True,
+    }
+    response = requests.post(url, json=payload, timeout=10)
+    try:
+        data = response.json()
+    except ValueError:
+        raise AuthError('Не удалось разобрать ответ Firebase')
+
+    if response.status_code != 200 or 'error' in data:
+        message = data.get('error', {}).get('message', 'Ошибка входа')
+        raise AuthError(message)
+
+    return data
+
+
+def create_user_with_email_and_password(email: str, password: str) -> dict:
+    if not FIREBASE_API_KEY:
+        raise AuthError('FIREBASE_API_KEY не задан в config.py или .env')
+
+    url = (
+    f'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={FIREBASE_API_KEY}'
+    )
+    payload = {
+    'email': email,
+    'password': password,
+    'returnSecureToken': True,
+    }
+    response = requests.post(url, json=payload, timeout=10)
+    try:
+        data = response.json()
+    except ValueError:
+        raise AuthError('Не удалось разобрать ответ Firebase')
+
+    if response.status_code != 200 or 'error' in data:
+        message = data.get('error', {}).get('message', 'Ошибка создания пользователя')
+        raise AuthError(message)
+
+    return data
+
+
+def get_admin_profile(email: str) -> dict | None:
+    return query_user_by_email(email)

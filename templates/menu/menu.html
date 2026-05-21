@@ -1,0 +1,410 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="row align-items-center mb-4 g-3">
+  <div class="col-md-7">
+    <h1 class="h3 mb-0 text-white fw-bold">Меню питания</h1>
+    <p class="text-muted mb-0">
+      Управляйте рационом групп, контролируйте калории и состав блюд.
+    </p>
+  </div>
+
+  <div class="col-md-5 d-flex gap-2 justify-content-md-end justify-content-start flex-wrap">
+    <button class="btn btn-sm btn-outline-secondary px-3 text-white border-secondary"
+            onclick="toggleAllGroups(true)">
+      Развернуть все
+    </button>
+
+    <button class="btn btn-sm btn-outline-secondary px-3 text-white border-secondary"
+            onclick="toggleAllGroups(false)">
+      Свернуть все
+    </button>
+
+    <a href="{{ url_for('menu.add_form') }}"
+       class="btn btn-sm btn-primary px-3 fw-medium">
+      Добавить меню
+    </a>
+  </div>
+</div>
+
+<style>
+  .custom-accordion {
+    width: 100%;
+    padding-bottom: 50px;
+  }
+
+  .custom-accordion-item {
+    background: #151820 !important;
+    border: 1px solid #2f3340 !important;
+    border-radius: 16px !important;
+    margin-bottom: 18px !important;
+    overflow: hidden !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .accordion-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .group-header-btn {
+    background: #1c2028 !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 18px 20px !important;
+    text-align: left;
+    box-shadow: none !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .group-controls-wrapper {
+    flex-shrink: 0;
+  }
+
+    min-height: 88px;
+    transition: background-color 0.2s ease;
+  }
+
+  .group-header-btn:hover {
+    background: #232835 !important;
+  }
+
+  .group-header-btn:not(.collapsed) {
+    border-bottom: 1px solid #2f3340 !important;
+  }
+
+  .group-title-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .group-title-wrapper h2 {
+    margin: 0 !important;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  .group-title-wrapper span {
+    color: #9ca3af !important;
+    font-size: 0.875rem;
+  }
+
+  .group-controls-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+
+  .btn-delete-group {
+    font-size: 13px !important;
+    font-weight: 500;
+    border-radius: 8px !important;
+    padding: 7px 12px !important;
+    border: 1px solid #ff4d5d !important;
+    color: #ff6b7a !important;
+    background: transparent !important;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+
+  .btn-delete-group:hover {
+    background: #ff4d5d !important;
+    color: #ffffff !important;
+  }
+
+  .chevron-icon {
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .group-header-btn:not(.collapsed) .chevron-icon {
+    transform: rotate(180deg);
+  }
+
+  .group-collapse-body {
+    padding: 24px;
+    background: #151820;
+    color: #ffffff;
+  }
+
+  .day-section {
+    margin-bottom: 32px;
+  }
+
+  .day-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .day-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #dee2e6;
+    border-left: 4px solid #b259ff;
+    padding-left: 12px;
+    margin-bottom: 16px;
+  }
+
+  .menu-card {
+    background: #1e2125 !important;
+    border: 1px solid #2d3035 !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .menu-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .menu-card__img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-bottom: 1px solid #2d3035;
+  }
+
+  .ingredient-badge {
+    background: #342a21 !important;
+    color: #ffc107 !important;
+    border: 1px solid #4d3f32 !important;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    display: inline-block;
+  }
+
+  @media (max-width: 768px) {
+    .group-header-btn {
+      flex-direction: column;
+      align-items: flex-start !important;
+      gap: 12px;
+    }
+
+    .group-controls-wrapper {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .btn-delete-group {
+      font-size: 12px !important;
+      padding: 6px 10px !important;
+    }
+  }
+</style>
+
+{% if items_by_group %}
+  <div class="custom-accordion" id="menuAccordion">
+
+    {% for group_name, group_data in items_by_group.items() %}
+      {% set loop_idx = loop.index %}
+
+      <div class="custom-accordion-item">
+
+        <div class="accordion-header">
+          <div
+            class="group-header-btn collapsed"
+            role="button"
+            tabindex="0"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseGroup{{ loop_idx }}"
+            aria-expanded="false"
+          >
+            <div class="group-title-wrapper">
+              <h2>{{ group_name }}</h2>
+              <span>Нажмите, чтобы развернуть меню</span>
+            </div>
+
+            <svg
+              class="chevron-icon"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#adb5bd"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+
+          <div class="group-controls-wrapper">
+            {% if group_data.group_id %}
+              <a
+                href="{{ url_for('menu.group_menu', group_id=group_data.group_id) }}"
+                onclick="event && event.stopPropagation();"
+                class="btn btn-sm btn-outline-light px-3"
+                title="Редактировать меню группы"
+                style="border-color: #495057; font-size: 0.8rem; border-radius: 6px;"
+              >
+                Редактировать меню
+              </a>
+            {% endif %}
+
+            <form
+              method="post"
+              action="{{ url_for('menu.delete_group_menu', group_id=group_data.group_id) }}"
+              onsubmit="event && event.stopPropagation(); return confirm('Удалить все меню для группы {{ group_name }}?');"
+              class="m-0"
+            >
+              <button
+                type="submit"
+                class="btn-delete-group"
+                onclick="event && event.stopPropagation();"
+              >
+                Удалить всё меню
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div id="collapseGroup{{ loop_idx }}" class="collapse">
+          <div class="group-collapse-body">
+
+            {% set ns = namespace(has_content=false) %}
+
+            {% for day_key, day_label in day_labels.items() %}
+              {% set day_items = group_data.days.get(day_key, []) %}
+
+              {% if day_items %}
+                {% set ns.has_content = true %}
+
+                <div class="day-section">
+                  <h5 class="day-title">{{ day_label }}</h5>
+
+                  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                    {% for item in day_items %}
+                      <div class="col">
+                        <div class="card h-100 menu-card">
+
+                          {% if item.photo_url %}
+                            <img
+                              src="{{ item.photo_url }}"
+                              class="menu-card__img"
+                              alt="Фото блюда"
+                            />
+                          {% endif %}
+
+                          <div class="card-body d-flex flex-column p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2 gap-2">
+                              <div>
+                                <h5 class="card-title text-white h6 mb-1 fw-semibold">
+                                  {{ item.meal or 'Блюдо' }}
+                                </h5>
+                                <span class="text-muted small">
+                                  {{ item.time or '—' }}
+                                </span>
+                              </div>
+
+                              <span class="badge bg-primary px-2 py-1"
+                                    style="font-size: 0.75rem; font-weight: 500;">
+                                {{ item.kcal or '-' }} ккал
+                              </span>
+                            </div>
+
+                            <p class="card-text text-secondary small flex-grow-1 mb-3">
+                              {{ item.description or 'Описание отсутствует.' }}
+                            </p>
+
+                            {% if item.ingredients %}
+                              <div class="mt-auto">
+                                <div class="text-muted small mb-1" style="font-size: 0.75rem;">
+                                  Состав:
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-1">
+                                  {% for ingredient in item.ingredients %}
+                                    <span class="ingredient-badge">
+                                      {{ ingredient }}
+                                    </span>
+                                  {% endfor %}
+                                </div>
+                              </div>
+                            {% endif %}
+                          </div>
+
+                          <div class="card-footer bg-transparent border-top border-secondary d-flex justify-content-between gap-2 p-3">
+                            <a
+                              href="{{ url_for('menu.edit', menu_id=item.id) }}"
+                              onclick="event && event.stopPropagation();"
+                              class="btn btn-sm btn-outline-light w-50"
+                              style="border-color: #495057;"
+                            >
+                              Редактировать
+                            </a>
+
+                            <form
+                              method="post"
+                              action="{{ url_for('menu.delete', menu_id=item.id) }}"
+                              onsubmit="event && event.stopPropagation(); return confirm('Удалить блюдо?');"
+                              class="m-0 w-50"
+                            >
+                              <button type="submit"
+                                      class="btn btn-sm btn-outline-danger w-100">
+                                Удалить
+                              </button>
+                            </form>
+                          </div>
+
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+
+            {% if not ns.has_content %}
+              <div class="text-muted text-center py-3 bg-dark rounded-3"
+                   style="--bs-bg-opacity: .4;">
+                Для этой группы пока нет добавленных блюд на неделю.
+              </div>
+            {% endif %}
+
+          </div>
+        </div>
+
+      </div>
+    {% endfor %}
+
+  </div>
+{% else %}
+  <div class="text-muted bg-dark border border-secondary p-4 rounded-3 text-center">
+    Пока нет элементов меню. Добавьте меню для группы.
+  </div>
+{% endif %}
+
+<script>
+  function toggleAllGroups(show) {
+    const collapsibles = document.querySelectorAll(
+      '.custom-accordion-item .collapse'
+    );
+
+    collapsibles.forEach(el => {
+      const instance = bootstrap.Collapse.getOrCreateInstance(el, {
+        toggle: false
+      });
+
+      if (show) {
+        instance.show();
+      } else {
+        instance.hide();
+      }
+    });
+  }
+</script>
+{% endblock %}

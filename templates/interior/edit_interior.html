@@ -1,0 +1,103 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0">Редактировать интерьер</h1>
+      <p class="text-muted mb-0">Измените название категории и фото интерьера.</p>
+    </div>
+  </div>
+
+  <form method="post" action="{{ url_for('interior.edit', interior_id=interior.id) }}" enctype="multipart/form-data" class="card p-4 mb-4">
+    <div class="row g-3 mb-4">
+      <div class="col-md-12">
+        <label for="name" class="form-label">Название категории</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{ interior.name }}" placeholder="Например, спорт зал" required />
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h5 class="mb-0">Фото интерьера</h5>
+          <div class="text-muted">Измените фото и описания.</div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-light" onclick="addPhotoRow()">Добавить фото</button>
+      </div>
+      <div id="photos_items">
+        {% for photo in interior.photos or [] %}
+          <div class="photo-item card p-3 mb-3">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-6">
+                <label class="form-label">Фото</label>
+                <input type="file" class="form-control" name="photo[]" accept="image/*" />
+                {% if photo.url %}
+                  <small class="text-muted">Текущее: <a href="{{ photo.url }}" target="_blank">Посмотреть</a></small>
+                {% endif %}
+              </div>
+              <div class="col-md-5">
+                <label class="form-label">Описание</label>
+                <input type="text" class="form-control" name="description[]" value="{{ photo.description }}" placeholder="Описание фото" />
+              </div>
+              <div class="col-md-1">
+                <button type="button" class="btn btn-outline-danger w-100" onclick="removePhotoRow(this)">×</button>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        {% if not interior.photos %}
+          <div class="photo-item card p-3 mb-3">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-6">
+                <label class="form-label">Фото</label>
+                <input type="file" class="form-control" name="photo[]" accept="image/*" />
+              </div>
+              <div class="col-md-5">
+                <label class="form-label">Описание</label>
+                <input type="text" class="form-control" name="description[]" placeholder="Описание фото" />
+              </div>
+              <div class="col-md-1">
+                <button type="button" class="btn btn-outline-danger w-100" onclick="removePhotoRow(this)">×</button>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="d-flex gap-3">
+      <button type="submit" class="btn btn-primary">Сохранить интерьер</button>
+      <a href="{{ url_for('interior.index') }}" class="btn btn-outline-light">Отмена</a>
+    </div>
+  </form>
+
+  <script>
+    function removePhotoRow(button) {
+      const row = button.closest('.photo-item');
+      if (row) row.remove();
+    }
+
+    function addPhotoRow() {
+      const container = document.getElementById('photos_items');
+      if (!container) return;
+      const row = document.createElement('div');
+      row.className = 'photo-item card p-3 mb-3';
+      row.innerHTML = `
+        <div class="row g-3 align-items-end">
+          <div class="col-md-6">
+            <label class="form-label">Фото</label>
+            <input type="file" class="form-control" name="photo[]" accept="image/*" />
+          </div>
+          <div class="col-md-5">
+            <label class="form-label">Описание</label>
+            <input type="text" class="form-control" name="description[]" placeholder="Описание фото" />
+          </div>
+          <div class="col-md-1">
+            <button type="button" class="btn btn-outline-danger w-100" onclick="removePhotoRow(this)">×</button>
+          </div>
+        </div>
+      `;
+      container.appendChild(row);
+    }
+  </script>
+{% endblock %}

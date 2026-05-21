@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Админ панель Sanny Bunnies</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <style>
+      :root {
+        --bs-body-bg: #09090d;
+        --bs-body-color: #ece8ff;
+        --bs-primary: #9d6fff;
+        --bs-secondary: #6c757d;
+        --bs-success: #198754;
+        --bs-info: #0dcaf0;
+        --bs-warning: #ffc107;
+        --bs-danger: #dc3545;
+        --bs-light: #f8f9fa;
+        --bs-dark: #212529;
+        --bs-border-color: rgba(145, 95, 255, 0.18);
+        --bs-border-radius: 0.75rem;
+      }
+      body { font-family: Inter, Arial, sans-serif; }
+      .app { display: flex; min-height: 100vh; }
+      .sidebar { width: 260px; background: #10101c; padding: 28px; box-sizing: border-box; border-right: 1px solid var(--bs-border-color); }
+      .sidebar h1 { font-size: 20px; margin: 0 0 26px; color: #f3eeff; letter-spacing: 0.04em; }
+      .sidebar nav { display: flex; flex-direction: column; gap: 10px; }
+      .sidebar a { display: block; color: #d9d1ff; text-decoration: none; margin: 8px 0; padding: 10px 14px; border-radius: 12px; transition: background 0.2s ease, color 0.2s ease; }
+      .sidebar a:hover { color: #fff; background: rgba(125, 78, 255, 0.12); }
+      .content { flex: 1; padding: 28px; }
+      .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; gap: 16px; }
+      .topbar h2 { margin: 0; font-size: 28px; letter-spacing: 0.02em; color: #f8f2ff; }
+      .topbar div { color: #d7ccff; }
+      .card { background: #12111f; border: 1px solid var(--bs-border-color); border-radius: var(--bs-border-radius); padding: 28px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.22); }
+      table { width: 100%; border-collapse: collapse; margin-top: 24px; }
+      th, td { padding: 14px 12px; border-bottom: 1px solid rgba(145, 95, 255, 0.12); text-align: left; }
+      th { color: #cbb8ff; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+      tr:hover td { background: rgba(126, 77, 255, 0.06); }
+      .form-control { background: #0f0f17; color: #f2ebff; border: 1px solid var(--bs-border-color); }
+      .form-control:focus { border-color: var(--bs-primary); box-shadow: 0 0 0 0.2rem rgba(157, 111, 255, 0.25); }
+      .btn { border-radius: var(--bs-border-radius); font-weight: 600; }
+      .btn-primary { background: #3b3c5b; border-color: rgba(145, 95, 255, 0.24); }
+      .btn-primary:hover { background: #4d4f7f; border-color: rgba(145, 95, 255, 0.24); }
+      .flash { color: #f8b6ff; margin-bottom: 18px; font-weight: 600; }
+      .section-note { color: #c1b1ff; margin-top: 8px; }
+      .badge { background: rgba(123, 83, 255, 0.14); color: #e9ddff; }
+    </style>
+  </head>
+  <body data-bs-theme="dark">
+    <div class="app">
+      <aside class="sidebar">
+        <h1>Админ панель</h1>
+        <nav>
+          <a href="{{ url_for('kindergarten.index') }}" class="nav-link">Информация садика</a>
+          <a href="{{ url_for('users.index') }}" class="nav-link">Пользователи</a>
+          <a href="{{ url_for('groups.index') }}" class="nav-link">Группы</a>
+          <a href="{{ url_for('teachers.index') }}" class="nav-link">Воспитатели</a>
+          <a href="{{ url_for('news.index') }}" class="nav-link">Новости</a>
+          <a href="{{ url_for('interior.index') }}" class="nav-link">Интерьер</a>
+          <a href="{{ url_for('menu.index') }}" class="nav-link">Меню питания</a>
+          <a href="{{ url_for('schedule.index') }}" class="nav-link">Расписание</a>
+          <a href="{{ url_for('reviews.index') }}" class="nav-link">Отзывы</a>
+          <a href="{{ url_for('faq.index') }}" class="nav-link">FAQ</a>
+          <a href="{{ url_for('requests.index') }}" class="nav-link">Заявки</a>
+          <a href="{{ url_for('auth.logout') }}" class="nav-link">Выйти</a>
+        </nav>
+      </aside>
+      <main class="content">
+        <div class="topbar d-flex justify-content-between align-items-center mb-4 gap-3">
+          <div>
+            <h2 class="mb-0">{{ section }}</h2>
+            <div class="text-muted">{{ session.get('user_name', 'Гость') }}</div>
+          </div>
+          <div><strong>Роль:</strong> {{ session.get('user_role', '-') }}</div>
+        </div>
+        <div class="card">
+          {% with messages = get_flashed_messages(category_filter=['error']) %}
+            {% if messages %}
+              <div class="alert alert-danger">{{ messages[0] }}</div>
+            {% endif %}
+          {% endwith %}
+          {% block content %}{% endblock %}
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
