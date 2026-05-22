@@ -1,5 +1,6 @@
 import os
 from firebase_admin import credentials, firestore, initialize_app, auth, storage
+from google.cloud import firestore_v1
 import firebase_admin
 from datetime import datetime
 
@@ -163,7 +164,7 @@ def delete_document(collection_name, doc_id):
 
 def query_user_by_email(email):
     db = get_firestore()
-    query = db.collection('users').where('email', '==', email).limit(1).stream()
+    query = db.collection('users').where(filter=firestore_v1.FieldFilter('email', '==', email)).limit(1).stream()
     for doc in query:
         return normalize_document(doc)
     return None

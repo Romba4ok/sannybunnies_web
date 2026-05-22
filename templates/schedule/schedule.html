@@ -31,9 +31,9 @@
     }
 
     .custom-accordion-item {
-      background-color: #141619 !important;
-      border: 1px solid #2d3035 !important;
-      border-radius: 12px !important;
+      background-color: var(--card) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: var(--radius) !important;
       margin-bottom: 16px !important;
       overflow: hidden !important;
     }
@@ -50,8 +50,8 @@
     .schedule-header-btn {
       flex: 1;
       min-width: 0;
-      background: #1e2125 !important;
-      color: #fff !important;
+      background: linear-gradient(135deg, rgba(21, 150, 137, 0.1), rgba(246, 200, 95, 0.14)) !important;
+      color: var(--text) !important;
       border: none !important;
       padding: 16px 20px !important;
       text-align: left;
@@ -67,11 +67,11 @@
     }
 
     .schedule-header-btn:hover {
-      background: #24282d !important;
+      background: linear-gradient(135deg, rgba(21, 150, 137, 0.17), rgba(246, 200, 95, 0.22)) !important;
     }
 
     .schedule-header-btn:not(.collapsed) {
-      border-bottom: 1px solid #2d3035 !important;
+      border-bottom: 1px solid var(--border) !important;
     }
 
     /* Текстовый блок */
@@ -84,7 +84,7 @@
     .schedule-title {
       font-size: 1.15rem;
       font-weight: 600;
-      color: #fff;
+      color: #14222b;
     }
 
     /* Кнопки управления */
@@ -101,28 +101,28 @@
       font-weight: 500;
       border-radius: 6px !important;
       padding: 6px 12px !important;
-      border: 1px solid #dc3545 !important;
-      color: #ea868f !important;
+      border: 1px solid rgba(227, 79, 95, 0.3) !important;
+      color: var(--danger) !important;
       background: transparent;
       transition: all 0.2s ease;
     }
     .btn-delete-schedule:hover {
-      background: #dc3545 !important;
+      background: var(--danger) !important;
       color: #fff !important;
     }
 
     /* Контент внутри спойлера */
     .schedule-collapse-body {
       padding: 24px;
-      color: #fff;
-      background-color: #141619;
+      color: var(--text);
+      background-color: rgba(255, 255, 255, 0.72);
     }
 
     /* Плашки дней недели */
     .day-card {
-      background: #1e2125 !important;
-      border: 1px solid #2d3035 !important;
-      border-radius: 12px !important;
+      background: #ffffff !important;
+      border: 1px solid var(--border) !important;
+      border-radius: var(--radius) !important;
       padding: 16px;
       height: 100%;
     }
@@ -130,8 +130,8 @@
     .day-card-title {
       font-size: 1rem;
       font-weight: 600;
-      color: #dee2e6;
-      border-left: 3px solid #b259ff;
+      color: #14313a;
+      border-left: 3px solid var(--accent);
       padding-left: 10px;
       margin-bottom: 14px;
     }
@@ -139,7 +139,7 @@
     /* Элементы событий внутри дня */
     .event-item {
       padding: 8px 0;
-      border-bottom: 1px solid #2d3035;
+      border-bottom: 1px solid var(--border);
     }
     .event-item:last-child {
       border-bottom: none;
@@ -151,9 +151,9 @@
 
     /* Бейдж времени */
     .event-time-badge {
-      background-color: #212830;
-      color: #58a6ff;
-      border: 1px solid #30363d;
+      background-color: rgba(75, 159, 225, 0.12);
+      color: #1d6fae;
+      border: 1px solid rgba(75, 159, 225, 0.28);
       font-size: 0.75rem;
       font-weight: 500;
       padding: 2px 6px;

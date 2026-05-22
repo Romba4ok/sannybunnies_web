@@ -34,6 +34,10 @@ def create_app():
     app.register_blueprint(kindergarten_bp, url_prefix='/kindergarten')
     app.register_blueprint(faq_bp, url_prefix='/faq')
 
+    @app.route('/')
+    def index():
+        return redirect(url_for('auth.login'))
+
     @app.route('/uploads/<filename>')
     def uploaded_file(filename):
         return send_from_directory(UPLOAD_FOLDER, filename)
