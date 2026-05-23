@@ -3,6 +3,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+os.environ.pop('FIRESTORE_EMULATOR_HOST', None)
+os.environ.pop('FIREBASE_AUTH_EMULATOR_HOST', None)
+os.environ.pop('FIREBASE_DATABASE_EMULATOR_HOST', None)
+for proxy_var in (
+    'HTTP_PROXY',
+    'HTTPS_PROXY',
+    'ALL_PROXY',
+    'http_proxy',
+    'https_proxy',
+    'all_proxy',
+):
+    os.environ.pop(proxy_var, None)
+
 SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-change-in-production')
 FIREBASE_CREDENTIALS = os.getenv('FIREBASE_CREDENTIALS', 'serviceAccountKey.json')
 FIREBASE_API_KEY = os.getenv('FIREBASE_API_KEY')

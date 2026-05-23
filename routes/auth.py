@@ -28,7 +28,7 @@ def login():
 
         try:
             token_data = sign_in_with_email_and_password(email, password)
-            profile = get_admin_profile(email)
+            profile = get_admin_profile(email, token_data.get('localId'))
             if not profile or profile.get('role') != ADMIN_ROLE:
                 flash('Нет доступа администратора', 'error')
                 return render_template('auth/login.html')

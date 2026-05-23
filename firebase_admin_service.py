@@ -1,10 +1,30 @@
 import os
-from firebase_admin import credentials, firestore, initialize_app, auth, storage
-from google.cloud import firestore_v1
+
+# ХАК: Принудительно очищаем переменные эмулятора перед инициализацией,
+# чтобы Firestore SDK не пытался подключаться к локальному порту 9.
+os.environ.pop('FIRESTORE_EMULATOR_HOST', None)
+os.environ.pop('FIREBASE_AUTH_EMULATOR_HOST', None)
+os.environ.pop('FIREBASE_DATABASE_EMULATOR_HOST', None)
+for proxy_var in (
+    'HTTP_PROXY',
+    'HTTPS_PROXY',
+    'ALL_PROXY',
+    'http_proxy',
+    'https_proxy',
+    'all_proxy',
+):
+    os.environ.pop(proxy_var, None)
+
 import firebase_admin
+from firebase_admin import credentials, firestore, initialize_app, auth, storage
+from google.api_core.retry import Retry
+from google.cloud import firestore_v1
 from datetime import datetime
 
 from config import FIREBASE_CREDENTIALS, FIREBASE_STORAGE_BUCKET
+
+FIRESTORE_TIMEOUT = 8
+FIRESTORE_RETRY = Retry(deadline=FIRESTORE_TIMEOUT)
 
 firebase_app = None
 
@@ -18,7 +38,11 @@ def init_firebase():
                 "Скопируй сервисный файл JSON и укажи путь в переменной FIREBASE_CREDENTIALS"
             )
         cred = credentials.Certificate(FIREBASE_CREDENTIALS)
-        firebase_app = initialize_app(cred)
+        
+        # ИСПРАВЛЕНИЕ: Передаем имя бакета при инициализации, чтобы работал Storage
+        firebase_app = initialize_app(cred, {
+            'storageBucket': FIREBASE_STORAGE_BUCKET
+        })
     return firebase_app
 
 
@@ -47,7 +71,7 @@ def normalize_document(doc):
 
 def get_collection_items(collection_name):
     db = get_firestore()
-    docs = db.collection(collection_name).stream()
+    docs = db.collection(collection_name).stream(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
     return [normalize_document(doc) for doc in docs]
 
 
@@ -61,14 +85,14 @@ def get_users_by_role(role):
 def get_children_with_parent():
     db = get_firestore()
     children = []
-    docs = db.collection('children').stream()
+    docs = db.collection('children').stream(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
     for doc in docs:
         child = normalize_document(doc)
 
         parent_id = child.get('parent_id') or child.get('parent_uid')
         parent_data = {}
         if parent_id:
-            parent_doc = db.collection('users').document(parent_id).get()
+            parent_doc = db.collection('users').document(parent_id).get(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
             if parent_doc.exists:
                 parent_data = parent_doc.to_dict() or {}
 
@@ -80,7 +104,7 @@ def get_children_with_parent():
         child['parent_email'] = parent_data.get('email')
 
         if child.get('group_id'):
-            group_doc = db.collection('groups').document(child['group_id']).get()
+            group_doc = db.collection('groups').document(child['group_id']).get(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
             group_data = group_doc.to_dict() if group_doc and group_doc.exists else {}
             child['group_name'] = group_data.get('name')
 
@@ -93,19 +117,11 @@ def get_children_with_parent():
 
 def get_document(collection_name, doc_id):
     db = get_firestore()
-    doc = db.collection(collection_name).document(doc_id).get()
+    doc = db.collection(collection_name).document(doc_id).get(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
     return normalize_document(doc) if doc and doc.exists else None
 
 
 def set_child_group_id(*args):
-    """
-    Backwards-compatible setter for child's `group_id`.
-
-    Supported signatures:
-    - set_child_group_id(child_id)
-    - set_child_group_id(child_id, group_id)
-    - legacy: set_child_group_id(parent_id, child_id, group_id)
-    """
     if len(args) == 1:
         child_id = args[0]
         group_id = None
@@ -118,7 +134,7 @@ def set_child_group_id(*args):
 
     db = get_firestore()
     child_ref = db.collection('children').document(child_id)
-    child_doc = child_ref.get()
+    child_doc = child_ref.get(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
     if not child_doc or not child_doc.exists:
         return
     if group_id is None:
@@ -130,7 +146,7 @@ def set_child_group_id(*args):
 def update_child(child_id, data):
     db = get_firestore()
     child_ref = db.collection('children').document(child_id)
-    child_doc = child_ref.get()
+    child_doc = child_ref.get(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
     if not child_doc or not child_doc.exists:
         return
     child_ref.update(data)
@@ -149,6 +165,7 @@ def update_document(collection_name, doc_id, data):
 
 
 def update_user_password(uid, password):
+    init_firebase()
     auth.update_user(uid, password=password)
 
 
@@ -164,13 +181,14 @@ def delete_document(collection_name, doc_id):
 
 def query_user_by_email(email):
     db = get_firestore()
-    query = db.collection('users').where(filter=firestore_v1.FieldFilter('email', '==', email)).limit(1).stream()
+    query = db.collection('users').where(filter=firestore_v1.FieldFilter('email', '==', email)).limit(1).stream(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
     for doc in query:
         return normalize_document(doc)
     return None
 
 
 def create_teacher_user(email, password, name, position, description, photo_url=None):
+    init_firebase()
     user = auth.create_user(email=email, password=password, display_name=name)
     user_data = {
         'uid': user.uid,
@@ -199,6 +217,7 @@ def update_teacher(doc_id, name, position, description, photo_url=None):
 
 
 def delete_teacher(doc_id):
+    init_firebase()
     user_doc = get_document('users', doc_id)
     if user_doc:
         try:
@@ -232,15 +251,22 @@ def upload_photo_to_storage(file, folder_path):
         return None
     try:
         init_firebase()
-        bucket = storage.bucket(FIREBASE_STORAGE_BUCKET)
+        # Метод bucket() теперь автоматически подхватит имя из initialize_app
+        bucket = storage.bucket()
         blob_name = f"{folder_path}/{file.filename}"
         blob = bucket.blob(blob_name)
+        
+        # Сбрасываем указатель файла в начало на случай, если его читали ранее
+        if hasattr(file, 'seek'):
+            file.seek(0)
+            
         blob.upload_from_string(file.read(), content_type=getattr(file, 'content_type', None))
         try:
             blob.make_public()
             return blob.public_url
-        except Exception:
-            return None
+        except Exception as pe:
+            print(f"Warning: Could not make blob public, returning default URL: {pe}")
+            return blob.public_url
     except Exception as e:
         print(f"Error uploading file to Firebase Storage: {e}")
     return None

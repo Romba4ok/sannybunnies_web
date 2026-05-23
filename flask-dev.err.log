@@ -6,3 +6,98 @@ Press CTRL+C to quit
  * Restarting with stat
  * Debugger is active!
  * Debugger PIN: 746-746-306
+127.0.0.1 - - [23/May/2026 14:42:38] "GET / HTTP/1.1" 302 -
+127.0.0.1 - - [23/May/2026 14:42:38] "GET /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 14:42:39] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 14:42:58] "POST /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 14:42:58] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 14:44:03] "POST /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 14:44:03] "GET /static/css/app.css HTTP/1.1" 304 -
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\auth_service.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\auth_service.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+127.0.0.1 - - [23/May/2026 14:45:58] "POST /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 14:45:59] "GET /static/css/app.css HTTP/1.1" 304 -
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\auth_service.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\auth_service.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+127.0.0.1 - - [23/May/2026 14:48:43] "GET /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 14:51:54] "POST /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 14:53:11] "POST /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 14:53:25] "POST /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 14:53:25] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 15:24:38] "POST /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:24:39] "GET /static/css/app.css HTTP/1.1" 304 -
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\config.py', reloading
+Exception in thread Thread-1 (serve_forever):
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\firebase_admin_service.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+127.0.0.1 - - [23/May/2026 15:38:54] "GET /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:39:16] "GET /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:39:16] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 15:39:18] "GET /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:39:19] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 15:42:58] "POST /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:43:23] "GET /groups/ HTTP/1.1" 500 -
+127.0.0.1 - - [23/May/2026 15:43:31] "GET /kindergarten/ HTTP/1.1" 500 -
+127.0.0.1 - - [23/May/2026 15:43:40] "POST /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:43:43] "GET /teachers/ HTTP/1.1" 500 -
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\firebase_admin_service.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\routes\\auth.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\firebase_admin_service.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+127.0.0.1 - - [23/May/2026 15:49:53] "POST /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:49:53] "GET /static/css/app.css HTTP/1.1" 304 -
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\firebase_admin_service.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\config.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+127.0.0.1 - - [23/May/2026 15:50:49] "POST /auth/login HTTP/1.1" 302 -
+127.0.0.1 - - [23/May/2026 15:50:51] "GET /teachers/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:50:51] "GET /kindergarten/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:50:53] "GET /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:50:53] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 15:50:55] "GET /users/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:50:56] "GET /users/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:51:08] "POST /auth/login HTTP/1.1" 302 -
+127.0.0.1 - - [23/May/2026 15:51:12] "GET /users/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:51:12] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 15:51:16] "GET /kindergarten/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:51:16] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 15:51:20] "GET /users/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:51:21] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 15:51:22] "GET /groups/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:51:22] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 15:51:24] "GET /news/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:51:24] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 15:51:25] "GET /interior/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:51:25] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 15:51:26] "GET /menu/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:51:26] "GET /static/css/app.css HTTP/1.1" 304 -
