@@ -1,4 +1,5 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, request, url_for
+from template_utils import stream_template
 from werkzeug.utils import secure_filename
 
 from firebase_admin_service import (
@@ -18,14 +19,14 @@ teachers_bp = Blueprint('teachers', __name__, template_folder='../templates')
 @teachers_bp.route('/add_form')
 @login_required
 def add_form():
-    return render_template('teachers/add_teacher.html')
+    return stream_template('teachers/add_teacher.html')
 
 
 @teachers_bp.route('/')
 @login_required
 def index():
     teachers = get_users_by_role('teacher')
-    return render_template('teachers/teachers.html', teachers=teachers, section='Воспитатели')
+    return stream_template('teachers/teachers.html', teachers=teachers, section='Воспитатели')
 
 
 @teachers_bp.route('/add', methods=['GET', 'POST'])
@@ -45,7 +46,7 @@ def add():
 
         if not all([email, password, name]):
             flash('Email, пароль и имя обязательны', 'error')
-            return render_template('teachers/add_teacher.html')
+            return stream_template('teachers/add_teacher.html')
 
         try:
             create_teacher_user(email, password, name, position, description, photo_url)
@@ -54,7 +55,7 @@ def add():
         except Exception as e:
             flash(f'Ошибка при создании: {str(e)}', 'error')
 
-    return render_template('teachers/add_teacher.html')
+    return stream_template('teachers/add_teacher.html')
 
 
 @teachers_bp.route('/edit/<teacher_id>', methods=['GET'])
@@ -64,7 +65,7 @@ def edit_form(teacher_id):
     if not teacher or teacher.get('role') != 'teacher':
         flash('Воспитатель не найден', 'error')
         return redirect(url_for('teachers.index'))
-    return render_template('teachers/edit_teacher.html', teacher=teacher)
+    return stream_template('teachers/edit_teacher.html', teacher=teacher)
 
 
 @teachers_bp.route('/edit/<teacher_id>', methods=['POST'])
@@ -95,7 +96,7 @@ def edit(teacher_id):
         return redirect(url_for('teachers.index'))
     except Exception as e:
         flash(f'Ошибка при обновлении: {str(e)}', 'error')
-    return render_template('teachers/edit_teacher.html', teacher=teacher)
+    return stream_template('teachers/edit_teacher.html', teacher=teacher)
 
 
 @teachers_bp.route('/delete/<teacher_id>', methods=['POST'])

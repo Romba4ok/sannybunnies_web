@@ -1,7 +1,8 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, request, url_for
 
 from firebase_admin_service import get_document, set_document
 from routes.auth import login_required
+from template_utils import stream_template
 
 kindergarten_bp = Blueprint('kindergarten', __name__, template_folder='../templates')
 
@@ -26,4 +27,4 @@ def index():
         })
         return redirect(url_for('kindergarten.index'))
 
-    return render_template('kindergarten/kindergarten.html', info=info, section='Информация садика')
+    return stream_template('kindergarten/kindergarten.html', info=info, section='Информация садика')

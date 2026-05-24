@@ -1,4 +1,5 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, request, url_for
+from template_utils import stream_template
 
 from firebase_admin_service import (
     create_document,
@@ -69,7 +70,7 @@ def _remove_child_from_group(child, group_id):
 def index():
     items = get_collection_items('groups')
     items.sort(key=lambda x: int(x.get('age_from', 0)) if x.get('age_from') and x['age_from'].isdigit() else 0)
-    return render_template('groups/groups.html', items=items, section='Группы')
+    return stream_template('groups/groups.html', items=items, section='Группы')
 
 
 @groups_bp.route('/add_form')
@@ -77,7 +78,7 @@ def index():
 def add_form():
     teachers = get_users_by_role('teacher')
     children = _get_children_candidates()
-    return render_template('groups/add_group.html', teachers=teachers, children=children)
+    return stream_template('groups/add_group.html', teachers=teachers, children=children)
 
 
 @groups_bp.route('/view/<group_id>')
@@ -91,7 +92,7 @@ def view(group_id):
     group.setdefault('children_uids', [])
     teachers = _get_teachers_by_ids(group['teacher_uids'])
     children = _get_children_by_ids(group['children_uids'])
-    return render_template('groups/group_detail.html', group=group, teachers=teachers, children=children)
+    return stream_template('groups/group_detail.html', group=group, teachers=teachers, children=children)
 
 
 @groups_bp.route('/add', methods=['POST'])
@@ -152,7 +153,7 @@ def edit(group_id):
     children = _get_children_candidates()
     group.setdefault('teacher_uids', [])
     group.setdefault('children_uids', [])
-    return render_template('groups/edit_group.html', group=group, teachers=teachers, children=children)
+    return stream_template('groups/edit_group.html', group=group, teachers=teachers, children=children)
 
 
 @groups_bp.route('/delete/<group_id>', methods=['POST'])

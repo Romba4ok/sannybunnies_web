@@ -1,4 +1,5 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, request, url_for
+from template_utils import stream_template
 from firebase_admin import firestore
 
 from firebase_admin_service import (
@@ -29,7 +30,7 @@ def index():
     pending_requests = [child for child in children if child.get('requestStatus') is None]
     groups = get_collection_items('groups')
     groups.sort(key=lambda x: int(x.get('age_from', 0)) if x.get('age_from') and x['age_from'].isdigit() else 0)
-    return render_template('requests/requests.html', items=pending_requests, groups=groups, section='Заявки')
+    return stream_template('requests/requests.html', items=pending_requests, groups=groups, section='Заявки')
 
 
 @requests_bp.route('/approve/<child_id>', methods=['POST'])

@@ -16,8 +16,12 @@ for proxy_var in (
 ):
     os.environ.pop(proxy_var, None)
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-change-in-production')
 FIREBASE_CREDENTIALS = os.getenv('FIREBASE_CREDENTIALS', 'serviceAccountKey.json')
+if not os.path.isabs(FIREBASE_CREDENTIALS):
+    FIREBASE_CREDENTIALS = os.path.join(BASE_DIR, FIREBASE_CREDENTIALS)
 FIREBASE_API_KEY = os.getenv('FIREBASE_API_KEY')
 FIREBASE_AUTH_DOMAIN = os.getenv('FIREBASE_AUTH_DOMAIN')
 FIREBASE_PROJECT_ID = os.getenv('FIREBASE_PROJECT_ID')
@@ -28,7 +32,7 @@ FIREBASE_MEASUREMENT_ID = os.getenv('FIREBASE_MEASUREMENT_ID')
 ADMIN_ROLE = os.getenv('ADMIN_ROLE', 'admin')
 
 
-UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 
 FIREBASE_CONFIG = {
 'apiKey': FIREBASE_API_KEY,

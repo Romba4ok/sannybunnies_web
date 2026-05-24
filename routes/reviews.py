@@ -1,6 +1,7 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, request, url_for
+from template_utils import stream_template
 
-from firebase_admin_service import get_collection_items, get_document, update_document, delete_document
+from firebase_admin_service import get_document, iter_collection_items, update_document, delete_document
 from routes.auth import login_required
 
 reviews_bp = Blueprint('reviews', __name__, template_folder='../templates')
@@ -9,8 +10,8 @@ reviews_bp = Blueprint('reviews', __name__, template_folder='../templates')
 @reviews_bp.route('/')
 @login_required
 def index():
-    items = get_collection_items('reviews')
-    return render_template('reviews/reviews.html', items=items, section='Отзывы')
+    items = iter_collection_items('reviews')
+    return stream_template('reviews/reviews.html', items=items, section='Отзывы')
 
 
 @reviews_bp.route('/edit/<review_id>', methods=['GET', 'POST'])
@@ -26,7 +27,7 @@ def edit(review_id):
         update_document('reviews', review_id, {'rating': float(rating), 'text': text})
         return redirect(url_for('reviews.index'))
 
-    return render_template('reviews/edit_review.html', review=review)
+    return stream_template('reviews/edit_review.html', review=review)
 
 
 @reviews_bp.route('/delete/<review_id>', methods=['POST'])

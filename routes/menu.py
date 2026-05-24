@@ -1,4 +1,5 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, request, url_for
+from template_utils import stream_template
 from itertools import zip_longest
 
 from firebase_admin_service import (
@@ -90,7 +91,7 @@ def index():
         if group_key not in items_by_group:
             items_by_group[group_key] = {'group_id': item.get('group_id'), 'days': {day: [] for day in DAY_LABELS}}
         items_by_group[group_key]['days'][item['day']].append(item)
-    return render_template('menu/menu.html', items_by_group=items_by_group, day_labels=DAY_LABELS, section='Меню питания')
+    return stream_template('menu/menu.html', items_by_group=items_by_group, day_labels=DAY_LABELS, section='Меню питания')
 
 
 @menu_bp.route('/add_form')
@@ -99,7 +100,7 @@ def add_form():
     groups = get_collection_items('groups')
     groups.sort(key=lambda group: group.get('name') or group.get('id') or '')
     selected_group_id = request.args.get('group_id')
-    return render_template(
+    return stream_template(
         'menu/add_menu.html',
         groups=groups,
         selected_group_id=selected_group_id,
@@ -123,7 +124,7 @@ def group_menu(group_id):
     for item in group_items:
         items_by_day[item.get('day', 'monday')].append(item)
 
-    return render_template(
+    return stream_template(
         'menu/group_menu.html',
         group=group,
         items_by_day=items_by_day,
@@ -192,7 +193,7 @@ def edit(menu_id):
         })
         return redirect(url_for('menu.index'))
 
-    return render_template('menu/edit_menu.html', menu=menu_item, groups=groups, day_labels=DAY_LABELS, section='Меню питания')
+    return stream_template('menu/edit_menu.html', menu=menu_item, groups=groups, day_labels=DAY_LABELS, section='Меню питания')
 
 
 @menu_bp.route('/delete/<menu_id>', methods=['POST'])

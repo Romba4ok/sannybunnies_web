@@ -101,3 +101,611 @@ Exception in thread Thread-1 (serve_forever):
 127.0.0.1 - - [23/May/2026 15:51:25] "GET /static/css/app.css HTTP/1.1" 304 -
 127.0.0.1 - - [23/May/2026 15:51:26] "GET /menu/ HTTP/1.1" 200 -
 127.0.0.1 - - [23/May/2026 15:51:26] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 15:52:56] "GET /requests/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:52:56] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 15:53:56] "GET /auth/logout HTTP/1.1" 302 -
+127.0.0.1 - - [23/May/2026 15:53:56] "GET /auth/login HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:53:56] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 15:54:11] "POST /auth/login HTTP/1.1" 302 -
+127.0.0.1 - - [23/May/2026 15:54:15] "GET /users/ HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 15:54:15] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:33:14] "GET /kindergarten/ HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 169, in error_remapped_callable
+    return _StreamingResponseIterator(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 91, in __init__
+    self._stored_first_result = next(self._wrapped)
+                                ~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\grpc\_channel.py", line 538, in __next__
+    return self._next()
+           ~~~~~~~~~~^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\grpc\_channel.py", line 962, in _next
+    raise self
+grpc._channel._MultiThreadedRendezvous: <_MultiThreadedRendezvous of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"Getting metadata from plugin failed with error: (\'invalid_grant: Invalid JWT Signature.\', {\'error\': \'invalid_grant\', \'error_description\': \'Invalid JWT Signature.\'})", grpc_status:14}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 173, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.ServiceUnavailable: 503 Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\routes\auth.py", line 15, in wrapped
+    return view(*args, **kwargs)
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\routes\kindergarten.py", line 12, in index
+    info = get_document('kindergarten', 'info')
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\firebase_admin_service.py", line 120, in get_document
+    doc = db.collection(collection_name).document(doc_id).get(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\document.py", line 403, in get
+    response_iter = self._client._firestore_api.batch_get_documents(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\services\firestore\client.py", line 1203, in batch_get_documents
+    response = rpc(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_base.py", line 229, in _retry_error_helper
+    raise final_exc from source_exc
+google.api_core.exceptions.RetryError: Timeout of 8.0s exceeded, last exception: 503 Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})
+127.0.0.1 - - [24/May/2026 17:33:14] "GET /kindergarten/?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 17:33:14] "GET /kindergarten/?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 17:33:14] "GET /kindergarten/?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 17:33:14] "GET /kindergarten/?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:33:27] "GET /groups/ HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 169, in error_remapped_callable
+    return _StreamingResponseIterator(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 91, in __init__
+    self._stored_first_result = next(self._wrapped)
+                                ~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\grpc\_channel.py", line 538, in __next__
+    return self._next()
+           ~~~~~~~~~~^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\grpc\_channel.py", line 962, in _next
+    raise self
+grpc._channel._MultiThreadedRendezvous: <_MultiThreadedRendezvous of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_status:14, grpc_message:"Getting metadata from plugin failed with error: (\'invalid_grant: Invalid JWT Signature.\', {\'error\': \'invalid_grant\', \'error_description\': \'Invalid JWT Signature.\'})"}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 173, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.ServiceUnavailable: 503 Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\routes\auth.py", line 15, in wrapped
+    return view(*args, **kwargs)
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\routes\groups.py", line 70, in index
+    items = get_collection_items('groups')
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\firebase_admin_service.py", line 75, in get_collection_items
+    return [normalize_document(doc) for doc in docs]
+                                               ^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\stream_generator.py", line 58, in __next__
+    return self._generator.__next__()
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\query.py", line 410, in _make_stream
+    response_iterator, expected_prefix = self._get_stream_iterator(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\query.py", line 260, in _get_stream_iterator
+    response_iterator = self._client._firestore_api.run_query(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\services\firestore\client.py", line 1624, in run_query
+    response = rpc(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_base.py", line 229, in _retry_error_helper
+    raise final_exc from source_exc
+google.api_core.exceptions.RetryError: Timeout of 8.0s exceeded, last exception: 503 Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})
+127.0.0.1 - - [24/May/2026 17:33:27] "GET /groups/?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 17:33:27] "GET /groups/?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 17:33:27] "GET /groups/?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 17:33:27] "GET /groups/?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:34:58] "GET /users/ HTTP/1.1" 500 -
+127.0.0.1 - - [24/May/2026 17:35:04] "GET /groups/ HTTP/1.1" 500 -
+127.0.0.1 - - [24/May/2026 17:35:04] "GET /groups/ HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 169, in error_remapped_callable
+    return _StreamingResponseIterator(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 91, in __init__
+    self._stored_first_result = next(self._wrapped)
+                                ~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\grpc\_channel.py", line 538, in __next__
+    return self._next()
+           ~~~~~~~~~~^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\grpc\_channel.py", line 962, in _next
+    raise self
+grpc._channel._MultiThreadedRendezvous: <_MultiThreadedRendezvous of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"Getting metadata from plugin failed with error: (\'invalid_grant: Invalid JWT Signature.\', {\'error\': \'invalid_grant\', \'error_description\': \'Invalid JWT Signature.\'})", grpc_status:14}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 173, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.ServiceUnavailable: 503 Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\routes\auth.py", line 15, in wrapped
+    return view(*args, **kwargs)
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\routes\groups.py", line 70, in index
+    items = get_collection_items('groups')
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\firebase_admin_service.py", line 75, in get_collection_items
+    return [normalize_document(doc) for doc in docs]
+                                               ^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\stream_generator.py", line 58, in __next__
+    return self._generator.__next__()
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\query.py", line 410, in _make_stream
+    response_iterator, expected_prefix = self._get_stream_iterator(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\query.py", line 260, in _get_stream_iterator
+    response_iterator = self._client._firestore_api.run_query(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\services\firestore\client.py", line 1624, in run_query
+    response = rpc(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_base.py", line 229, in _retry_error_helper
+    raise final_exc from source_exc
+google.api_core.exceptions.RetryError: Timeout of 8.0s exceeded, last exception: 503 Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})
+127.0.0.1 - - [24/May/2026 17:35:04] "GET /groups/?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:35:04] "GET /groups/?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:35:04] "GET /groups/?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:35:46] "GET /groups/ HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 169, in error_remapped_callable
+    return _StreamingResponseIterator(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 91, in __init__
+    self._stored_first_result = next(self._wrapped)
+                                ~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\grpc\_channel.py", line 538, in __next__
+    return self._next()
+           ~~~~~~~~~~^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\grpc\_channel.py", line 962, in _next
+    raise self
+grpc._channel._MultiThreadedRendezvous: <_MultiThreadedRendezvous of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_status:14, grpc_message:"Getting metadata from plugin failed with error: (\'invalid_grant: Invalid JWT Signature.\', {\'error\': \'invalid_grant\', \'error_description\': \'Invalid JWT Signature.\'})"}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 173, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.ServiceUnavailable: 503 Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\routes\auth.py", line 15, in wrapped
+    return view(*args, **kwargs)
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\routes\groups.py", line 70, in index
+    items = get_collection_items('groups')
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\firebase_admin_service.py", line 75, in get_collection_items
+    return [normalize_document(doc) for doc in docs]
+                                               ^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\stream_generator.py", line 58, in __next__
+    return self._generator.__next__()
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\query.py", line 410, in _make_stream
+    response_iterator, expected_prefix = self._get_stream_iterator(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\query.py", line 260, in _get_stream_iterator
+    response_iterator = self._client._firestore_api.run_query(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\services\firestore\client.py", line 1624, in run_query
+    response = rpc(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_base.py", line 229, in _retry_error_helper
+    raise final_exc from source_exc
+google.api_core.exceptions.RetryError: Timeout of 8.0s exceeded, last exception: 503 Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})
+127.0.0.1 - - [24/May/2026 17:35:46] "GET /groups/?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:35:46] "GET /groups/?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:35:46] "GET /groups/?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:35:46] "GET /groups/?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:36:01] "GET /groups/ HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 169, in error_remapped_callable
+    return _StreamingResponseIterator(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 91, in __init__
+    self._stored_first_result = next(self._wrapped)
+                                ~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\grpc\_channel.py", line 538, in __next__
+    return self._next()
+           ~~~~~~~~~~^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\grpc\_channel.py", line 962, in _next
+    raise self
+grpc._channel._MultiThreadedRendezvous: <_MultiThreadedRendezvous of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"Getting metadata from plugin failed with error: (\'invalid_grant: Invalid JWT Signature.\', {\'error\': \'invalid_grant\', \'error_description\': \'Invalid JWT Signature.\'})", grpc_status:14}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 173, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.ServiceUnavailable: 503 Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\routes\auth.py", line 15, in wrapped
+    return view(*args, **kwargs)
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\routes\groups.py", line 70, in index
+    items = get_collection_items('groups')
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\firebase_admin_service.py", line 75, in get_collection_items
+    return [normalize_document(doc) for doc in docs]
+                                               ^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\stream_generator.py", line 58, in __next__
+    return self._generator.__next__()
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\query.py", line 410, in _make_stream
+    response_iterator, expected_prefix = self._get_stream_iterator(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\query.py", line 260, in _get_stream_iterator
+    response_iterator = self._client._firestore_api.run_query(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\services\firestore\client.py", line 1624, in run_query
+    response = rpc(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_base.py", line 229, in _retry_error_helper
+    raise final_exc from source_exc
+google.api_core.exceptions.RetryError: Timeout of 8.0s exceeded, last exception: 503 Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})
+127.0.0.1 - - [24/May/2026 17:36:01] "GET /groups/?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:36:01] "GET /groups/?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:36:01] "GET /groups/?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:36:01] "GET /groups/?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:36:10] "GET /kindergarten/ HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 169, in error_remapped_callable
+    return _StreamingResponseIterator(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 91, in __init__
+    self._stored_first_result = next(self._wrapped)
+                                ~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\grpc\_channel.py", line 538, in __next__
+    return self._next()
+           ~~~~~~~~~~^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\grpc\_channel.py", line 962, in _next
+    raise self
+grpc._channel._MultiThreadedRendezvous: <_MultiThreadedRendezvous of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"Getting metadata from plugin failed with error: (\'invalid_grant: Invalid JWT Signature.\', {\'error\': \'invalid_grant\', \'error_description\': \'Invalid JWT Signature.\'})", grpc_status:14}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 173, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.ServiceUnavailable: 503 Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\routes\auth.py", line 15, in wrapped
+    return view(*args, **kwargs)
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\routes\kindergarten.py", line 12, in index
+    info = get_document('kindergarten', 'info')
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\firebase_admin_service.py", line 120, in get_document
+    doc = db.collection(collection_name).document(doc_id).get(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\document.py", line 403, in get
+    response_iter = self._client._firestore_api.batch_get_documents(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\services\firestore\client.py", line 1203, in batch_get_documents
+    response = rpc(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_base.py", line 229, in _retry_error_helper
+    raise final_exc from source_exc
+google.api_core.exceptions.RetryError: Timeout of 8.0s exceeded, last exception: 503 Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})
+127.0.0.1 - - [24/May/2026 17:36:10] "GET /kindergarten/?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:36:10] "GET /kindergarten/?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:36:10] "GET /kindergarten/?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:53:15] "GET /kindergarten/ HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 169, in error_remapped_callable
+    return _StreamingResponseIterator(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 91, in __init__
+    self._stored_first_result = next(self._wrapped)
+                                ~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\grpc\_channel.py", line 538, in __next__
+    return self._next()
+           ~~~~~~~~~~^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\grpc\_channel.py", line 962, in _next
+    raise self
+grpc._channel._MultiThreadedRendezvous: <_MultiThreadedRendezvous of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_status:14, grpc_message:"Getting metadata from plugin failed with error: (\'invalid_grant: Invalid JWT Signature.\', {\'error\': \'invalid_grant\', \'error_description\': \'Invalid JWT Signature.\'})"}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\grpc_helpers.py", line 173, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.ServiceUnavailable: 503 Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\routes\auth.py", line 15, in wrapped
+    return view(*args, **kwargs)
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\routes\kindergarten.py", line 12, in index
+    info = get_document('kindergarten', 'info')
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\firebase_admin_service.py", line 120, in get_document
+    doc = db.collection(collection_name).document(doc_id).get(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\document.py", line 403, in get
+    response_iter = self._client._firestore_api.batch_get_documents(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\cloud\firestore_v1\services\firestore\client.py", line 1203, in batch_get_documents
+    response = rpc(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+    
+  File "C:\Users\romal\AppData\Roaming\Python\Python314\site-packages\google\api_core\retry\retry_base.py", line 229, in _retry_error_helper
+    raise final_exc from source_exc
+google.api_core.exceptions.RetryError: Timeout of 8.0s exceeded, last exception: 503 Getting metadata from plugin failed with error: ('invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'})
+127.0.0.1 - - [24/May/2026 17:53:15] "GET /kindergarten/?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:53:15] "GET /kindergarten/?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:53:15] "GET /kindergarten/?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:53:15] "GET /kindergarten/?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 304 -
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\config.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+127.0.0.1 - - [24/May/2026 17:56:02] "GET /kindergarten/ HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 17:56:02] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:56:05] "GET /kindergarten/ HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 17:56:05] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 17:56:14] "GET /users/ HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 17:56:14] "GET /static/css/app.css HTTP/1.1" 304 -
+127.0.0.1 - - [24/May/2026 18:00:11] "GET /groups/ HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 18:00:11] "GET /static/css/app.css HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 18:00:12] "GET /users/ HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 18:00:14] "GET /teachers/ HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 18:00:16] "GET /news/ HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 18:00:16] "GET /users/ HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 18:00:17] "GET /interior/ HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 18:00:20] "GET /menu/ HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 18:00:21] "GET /schedule/ HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 18:00:24] "GET /kindergarten/ HTTP/1.1" 200 -
+127.0.0.1 - - [24/May/2026 18:00:32] "GET /users/ HTTP/1.1" 200 -
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\template_utils.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\firebase_admin_service.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\firebase_admin_service.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\firebase_admin_service.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\routes\\faq.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\routes\\faq.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 746-746-306
+ * Detected change in 'C:\\Users\\romal\\Desktop\\Êîäû\\sannybunnies_web\\routes\\kindergarten.py', reloading
+ * Restarting with stat
+Traceback (most recent call last):
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\app.py", line 4, in <module>
+    from routes.auth import auth_bp
+  File "C:\Users\romal\Desktop\Êîäû\sannybunnies_web\routes\auth.py", line 2
+    from flask import Blueprint, flash, redirect, , request, session, url_for
+                                                  ^
+SyntaxError: invalid syntax

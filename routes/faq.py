@@ -1,7 +1,8 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, request, url_for
 
-from firebase_admin_service import create_document, delete_document, get_collection_items, get_document, update_document
+from firebase_admin_service import create_document, delete_document, get_document, iter_collection_items, update_document
 from routes.auth import login_required
+from template_utils import stream_template
 
 faq_bp = Blueprint('faq', __name__, template_folder='../templates')
 
@@ -9,14 +10,14 @@ faq_bp = Blueprint('faq', __name__, template_folder='../templates')
 @faq_bp.route('/')
 @login_required
 def index():
-    items = get_collection_items('faq')
-    return render_template('faq/faq.html', items=items, section='Часто задаваемые вопросы')
+    items = iter_collection_items('faq')
+    return stream_template('faq/faq.html', items=items, section='Часто задаваемые вопросы')
 
 
 @faq_bp.route('/add_form')
 @login_required
 def add_form():
-    return render_template('faq/add_faq.html', section='Часто задаваемые вопросы')
+    return stream_template('faq/add_faq.html', section='Часто задаваемые вопросы')
 
 
 @faq_bp.route('/add', methods=['POST'])
@@ -40,7 +41,7 @@ def edit(faq_id):
         update_document('faq', faq_id, {'question': question, 'answer': answer})
         return redirect(url_for('faq.index'))
 
-    return render_template('faq/edit_faq.html', faq=faq_item)
+    return stream_template('faq/edit_faq.html', faq=faq_item)
 
 
 @faq_bp.route('/delete/<faq_id>', methods=['POST'])

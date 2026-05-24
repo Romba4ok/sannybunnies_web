@@ -1,5 +1,6 @@
 from functools import wraps
-from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, flash, redirect, request, session, url_for
+from template_utils import stream_template
 
 from auth_service import AuthError, sign_in_with_email_and_password, get_admin_profile
 from config import ADMIN_ROLE
@@ -24,14 +25,14 @@ def login():
         password = request.form.get('password', '').strip()
         if not email or not password:
             flash('Email и пароль обязательны', 'error')
-            return render_template('auth/login.html')
+            return stream_template('auth/login.html')
 
         try:
             token_data = sign_in_with_email_and_password(email, password)
             profile = get_admin_profile(email, token_data.get('localId'))
             if not profile or profile.get('role') != ADMIN_ROLE:
                 flash('Нет доступа администратора', 'error')
-                return render_template('auth/login.html')
+                return stream_template('auth/login.html')
 
             session['user_email'] = email
             session['user_uid'] = token_data.get('localId')
@@ -44,7 +45,7 @@ def login():
         except Exception as exc:
             flash('Ошибка при входе: ' + str(exc), 'error')
 
-    return render_template('auth/login.html')
+    return stream_template('auth/login.html')
 
 
 @auth_bp.route('/logout')

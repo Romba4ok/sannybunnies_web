@@ -25,7 +25,17 @@
           <a href="{{ url_for('auth.logout') }}" class="nav-link">Выйти</a>
         </nav>
       </aside>
-      <main class="content">
+      <main class="content" id="appContent" aria-live="polite">
+        <div class="page-loader" id="pageLoader" aria-hidden="true">
+          <div class="page-loader__bar"></div>
+          <div class="page-loader__panel">
+            <div class="page-loader__spinner"></div>
+            <div>
+              <div class="page-loader__title">Загрузка</div>
+              <div class="page-loader__text">Данные открываются в этой же странице</div>
+            </div>
+          </div>
+        </div>
         <div class="topbar d-flex justify-content-between align-items-center mb-4 gap-3">
           <div>
             <h2 class="mb-0">{{ section }}</h2>
@@ -102,6 +112,148 @@
         trigger.classList.toggle('collapsed', !isShown);
         trigger.setAttribute('aria-expanded', isShown ? 'true' : 'false');
       });
+
+      (function () {
+        var content = document.getElementById('appContent');
+        var loader = document.getElementById('pageLoader');
+        var activeRequest = null;
+
+        if (!content || !window.DOMParser || !window.fetch || !window.history) {
+          return;
+        }
+
+        function setLoading(isLoading) {
+          document.body.classList.toggle('is-page-loading', isLoading);
+          content.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+          if (loader) {
+            loader.setAttribute('aria-hidden', isLoading ? 'false' : 'true');
+          }
+        }
+
+        function isInternalGetLink(link) {
+          if (!link || !link.href || link.target || link.hasAttribute('download')) {
+            return false;
+          }
+          if (link.closest('[data-bs-toggle="collapse"]')) {
+            return false;
+          }
+          var url = new URL(link.href, window.location.href);
+          if (url.origin !== window.location.origin) {
+            return false;
+          }
+          if (url.pathname === window.location.pathname && url.search === window.location.search) {
+            return Boolean(url.hash);
+          }
+          return true;
+        }
+
+        function runInlineScripts(root) {
+          root.querySelectorAll('script').forEach(function (oldScript) {
+            var script = document.createElement('script');
+            Array.prototype.forEach.call(oldScript.attributes, function (attr) {
+              script.setAttribute(attr.name, attr.value);
+            });
+            script.textContent = oldScript.textContent;
+            oldScript.replaceWith(script);
+          });
+        }
+
+        function updateActiveNav(url) {
+          document.querySelectorAll('.sidebar .nav-link').forEach(function (link) {
+            var linkUrl = new URL(link.href, window.location.href);
+            var isActive = linkUrl.pathname === url.pathname;
+            link.classList.toggle('active', isActive);
+          });
+        }
+
+        async function loadPage(url, options) {
+          options = options || {};
+
+          if (activeRequest) {
+            activeRequest.abort();
+          }
+
+          activeRequest = new AbortController();
+          setLoading(true);
+
+          try {
+            var response = await fetch(url.href, {
+              method: 'GET',
+              headers: {
+                'X-Requested-With': 'fetch',
+                'Accept': 'text/html'
+              },
+              credentials: 'same-origin',
+              signal: activeRequest.signal
+            });
+
+            if (!response.ok) {
+              throw new Error('HTTP ' + response.status);
+            }
+
+            var html = await response.text();
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var nextContent = doc.getElementById('appContent');
+
+            if (!nextContent) {
+              window.location.href = url.href;
+              return;
+            }
+
+            content.innerHTML = nextContent.innerHTML;
+            content = document.getElementById('appContent');
+            loader = document.getElementById('pageLoader');
+            runInlineScripts(content);
+
+            document.title = doc.title || document.title;
+            if (!options.fromPopState) {
+              window.history.pushState({ url: url.href }, '', url.href);
+            }
+            updateActiveNav(url);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } catch (error) {
+            if (error.name !== 'AbortError') {
+              window.location.href = url.href;
+            }
+          } finally {
+            activeRequest = null;
+            setLoading(false);
+          }
+        }
+
+        document.addEventListener('click', function (event) {
+          var link = event.target.closest('a');
+          if (!isInternalGetLink(link)) {
+            return;
+          }
+
+          var url = new URL(link.href, window.location.href);
+          if (url.pathname === window.location.pathname && url.search === window.location.search && url.hash) {
+            return;
+          }
+
+          event.preventDefault();
+          loadPage(url);
+        });
+
+        document.addEventListener('submit', function (event) {
+          var form = event.target.closest('form');
+          if (!form) {
+            return;
+          }
+          setTimeout(function () {
+            if (!event.defaultPrevented) {
+              setLoading(true);
+            }
+          }, 0);
+        });
+
+        window.addEventListener('popstate', function () {
+          loadPage(new URL(window.location.href), { fromPopState: true });
+        });
+
+        updateActiveNav(new URL(window.location.href));
+      })();
     </script>
   </body>
 </html>

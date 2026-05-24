@@ -1,10 +1,11 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, request, url_for
+from template_utils import stream_template
 
 from firebase_admin_service import (
     create_document,
     delete_document,
-    get_collection_items,
     get_document,
+    iter_collection_items,
     update_document,
 )
 from routes.auth import login_required
@@ -40,8 +41,8 @@ def _build_week_from_form():
 @schedule_bp.route('/')
 @login_required
 def index():
-    items = get_collection_items('schedule')
-    return render_template('schedule/schedule.html', items=items, section='Расписание')
+    items = iter_collection_items('schedule')
+    return stream_template('schedule/schedule.html', items=items, section='Расписание')
 
 
 @schedule_bp.route('/add_form')
@@ -49,7 +50,7 @@ def index():
 def add_form():
     groups = get_collection_items('groups')
     groups.sort(key=lambda x: int(x.get('age_from', 0)) if x.get('age_from') and x['age_from'].isdigit() else 0)
-    return render_template('schedule/add_schedule.html', groups=groups, section='Расписание')
+    return stream_template('schedule/add_schedule.html', groups=groups, section='Расписание')
 
 
 @schedule_bp.route('/add', methods=['POST'])
@@ -91,7 +92,7 @@ def edit(schedule_id):
         return redirect(url_for('schedule.index'))
 
     schedule.setdefault('days', {})
-    return render_template('schedule/edit_schedule.html', schedule=schedule, groups=groups, section='Расписание')
+    return stream_template('schedule/edit_schedule.html', schedule=schedule, groups=groups, section='Расписание')
 
 
 @schedule_bp.route('/delete/<schedule_id>', methods=['POST'])

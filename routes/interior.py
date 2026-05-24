@@ -1,11 +1,12 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, request, url_for
+from template_utils import stream_template
 
 from config import UPLOAD_FOLDER
 from firebase_admin_service import (
     create_document,
     delete_document,
-    get_collection_items,
     get_document,
+    iter_collection_items,
     update_document,
     upload_photo_to_storage,
 )
@@ -23,14 +24,14 @@ def _save_photo(photo):
 @interior_bp.route('/')
 @login_required
 def index():
-    items = get_collection_items('interior')
-    return render_template('interior/interior.html', items=items, section='Интерьер')
+    items = iter_collection_items('interior')
+    return stream_template('interior/interior.html', items=items, section='Интерьер')
 
 
 @interior_bp.route('/add_form')
 @login_required
 def add_form():
-    return render_template('interior/add_interior.html', section='Интерьер')
+    return stream_template('interior/add_interior.html', section='Интерьер')
 
 
 @interior_bp.route('/add', methods=['POST'])
@@ -83,7 +84,7 @@ def edit(interior_id):
         })
         return redirect(url_for('interior.index'))
 
-    return render_template('interior/edit_interior.html', interior=interior, section='Интерьер')
+    return stream_template('interior/edit_interior.html', interior=interior, section='Интерьер')
 
 
 @interior_bp.route('/delete/<interior_id>', methods=['POST'])

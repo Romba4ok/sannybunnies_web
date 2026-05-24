@@ -145,6 +145,96 @@ textarea {
   flex: 1;
   padding: 40px;
   min-width: 0; /* Предотвращает распирание флекс-контейнера */
+  position: relative;
+}
+
+.page-loader {
+  position: fixed;
+  inset: 0 0 auto 280px;
+  z-index: 300;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity var(--transition), transform var(--transition);
+}
+
+.page-loader__bar {
+  height: 3px;
+  width: 100%;
+  overflow: hidden;
+  background: rgba(157, 111, 255, 0.12);
+}
+
+.page-loader__bar::before {
+  content: "";
+  display: block;
+  width: 42%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), #42d4ff, var(--warning));
+  animation: page-loader-bar 1.05s ease-in-out infinite;
+}
+
+.page-loader__panel {
+  position: absolute;
+  top: 18px;
+  right: 40px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 250px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: rgba(14, 13, 24, 0.92);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.page-loader__spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(255, 255, 255, 0.16);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: page-loader-spin 0.8s linear infinite;
+  flex: 0 0 auto;
+}
+
+.page-loader__title {
+  color: #fff;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.page-loader__text {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.is-page-loading .page-loader {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.is-page-loading .content > :not(.page-loader) {
+  filter: saturate(0.9);
+}
+
+@keyframes page-loader-bar {
+  0% {
+    transform: translateX(-105%);
+  }
+  100% {
+    transform: translateX(245%);
+  }
+}
+
+@keyframes page-loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .topbar {
@@ -183,6 +273,235 @@ textarea {
   -webkit-backdrop-filter: blur(14px);
   transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
 }
+
+/* Form card layout tweaks */
+.form-card {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+/* Когда форма находится внутри другой карточки — растянуть по ширине родителя */
+.card > .form-card {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  box-shadow: none; /* чтобы не дублировались тени внутри */
+  border: none; /* оставить визуально единый контейнер */
+  background: transparent;
+}
+
+/* Скрыть внутреннюю серую область формы, показать только футер с кнопкой */
+.card > .form-card .card-body {
+  display: block;
+  padding: 24px;
+  margin: 0;
+  height: auto;
+  overflow: visible;
+}
+
+.card > .form-card .card-footer {
+  background: transparent;
+  border-top: none;
+  padding: 18px 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Form controls styling to match dark card look */
+.form-control {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: var(--text);
+  transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
+}
+.form-control:focus {
+  outline: none;
+  border-color: var(--border-strong);
+  box-shadow: 0 6px 30px rgba(111,85,242,0.08);
+  transform: translateY(-2px);
+}
+
+.form-label {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.card-footer .btn {
+  min-width: 140px;
+}
+
+@media (max-width: 800px) {
+  .sidebar { display: none; }
+  .content { padding: 20px; }
+  .form-card { max-width: 100%; padding: 16px; }
+  .btn { width: 100%; }
+}
+
+/* --- Users page styles --- */
+.users-form .form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.users-form .form-control,
+.users-form .form-select {
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  line-height: 1.2;
+  height: 44px;
+}
+
+/* File input needs its own spacing */
+.users-form input[type="file"] {
+  height: auto;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.01);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+/* Custom file input */
+.custom-file {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 44px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 0 10px;
+  border-radius: 12px;
+}
+.custom-file__button {
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  color: #fff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  border: none;
+  min-width: auto;
+}
+.custom-file__label {
+  color: var(--muted);
+  flex: 1;
+  margin-left: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.88rem;
+  max-width: 100px;
+  min-width: 0;
+}
+.custom-file input[type="file"] {
+  display: none;
+}
+.custom-file--small .custom-file__label {
+  max-width: 100px;
+}
+
+/* Make textarea taller but keep padding consistent */
+.users-form textarea.form-control {
+  min-height: 96px;
+  padding: 12px 14px;
+  height: auto;
+}
+.users-form .btn-primary {
+  padding: 10px 18px;
+  border-radius: 12px;
+}
+
+/* Add padding to the whole users form so inputs don't touch edges */
+.users-form {
+  padding: 18px;
+  border-radius: 12px;
+}
+
+.list-group {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.list-group-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
+  border: 1px solid rgba(255,255,255,0.03);
+  border-radius: 12px;
+}
+.list-group-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+  border-color: var(--border-strong);
+}
+
+.list-group-item .rounded-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.03);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+}
+
+.user-info strong { display:block; font-size:1rem; color:#fff }
+.user-info { color: var(--muted); margin-left: 10px }
+
+.user-actions .btn { margin-left: 8px }
+.user-actions form { display:inline-block; margin:0; }
+
+/* Children nested list styles */
+.children-group {
+  margin-top: 12px;
+  margin-left: 32px;
+  padding-left: 14px;
+  border-left: 1px solid rgba(157,111,255,0.15);
+  width: calc(100% - 32px);
+}
+.children-group .list-group-item {
+  background: rgba(255,255,255,0.01);
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-left: 0;
+}
+
+@media (max-width: 900px) {
+  .col-md-2 { flex: 0 0 50%; max-width: 50%; }
+  .user-actions { display:flex; gap:8px }
+}
+
+/* Layout: make the users form fields appear in a single row on wide screens */
+.users-form .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+.users-form .col-md-2 {
+  flex: 0 0 calc((100% - 5 * 12px) / 6);
+  max-width: calc((100% - 5 * 12px) / 6);
+}
+
+@media (max-width: 1100px) {
+  .users-form .col-md-2 { flex: 0 0 33.3333%; max-width:33.3333%; }
+}
+
+@media (max-width: 700px) {
+  .users-form .col-md-2 { flex: 0 0 100%; max-width:100%; }
+  .users-form .btn-primary { width:100%; }
+}
+
 
 .card:hover,
 .group-card:hover,
@@ -596,11 +915,25 @@ textarea {
   .content {
     padding: 24px;
   }
+
+  .page-loader {
+    left: 0;
+  }
+
+  .page-loader__panel {
+    right: 24px;
+  }
 }
 
 @media (max-width: 576px) {
   .content {
     padding: 16px;
+  }
+
+  .page-loader__panel {
+    left: 16px;
+    right: 16px;
+    min-width: 0;
   }
 
   .topbar {

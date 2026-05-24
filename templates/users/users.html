@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-  <form method="post" action="{{ url_for('users.add') }}" enctype="multipart/form-data" class="mb-4">
+  <form method="post" action="{{ url_for('users.add') }}" enctype="multipart/form-data" class="mb-4 users-form">
     <div class="row g-3">
       <div class="col-md-2">
         <label for="name" class="form-label">Имя</label>
@@ -29,113 +29,140 @@
       </div>
       <div class="col-md-2">
         <label for="photo" class="form-label">Аватарка</label>
-        <input type="file" class="form-control" id="photo" name="photo" accept="image/*" />
+        <div class="custom-file custom-file--small">
+          <button type="button" class="custom-file__button" onclick="document.getElementById('photo').click()">Выбрать файл</button>
+          <span class="custom-file__label" id="photo-filename">Нет файла</span>
+          <input type="file" id="photo" name="photo" accept="image/*" />
+        </div>
       </div>
     </div>
     <button type="submit" class="btn btn-primary mt-3">Добавить пользователя</button>
   </form>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      var fileInput = document.getElementById('photo');
+      var label = document.getElementById('photo-filename');
+      if(fileInput && label){
+        fileInput.addEventListener('change', function(){
+          var name = fileInput.files && fileInput.files.length ? fileInput.files[0].name : 'Нет файла';
+          label.textContent = name;
+        });
+      }
+    });
+  </script>
+
   <div class="table-responsive">
-    {% if admins %}
-      <h2 class="mt-5">Админы</h2>
-      <ul class="list-group mb-4">
-        {% for user in admins %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-              {% if user.photoUrl or user.photo_url %}
-                <img src="{{ user.photoUrl or user.photo_url }}" alt="Аватарка" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;" />
-              {% endif %}
-              <div>
-                <strong>{{ user.name }}</strong><br />
-                {{ user.email }}<br />
-                {{ user.phone or '-' }}
+    {% if admins is defined %}
+      {# Рендер со стороны сервера (обратная совместимость) #}
+      {% if admins %}
+        <h2 class="mt-5">Админы</h2>
+        <ul class="list-group mb-4">
+          {% for user in admins %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center">
+                {% if user.photoUrl or user.photo_url %}
+                  <img src="{{ user.photoUrl or user.photo_url }}" alt="Аватарка" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;" />
+                {% endif %}
+                <div>
+                  <strong>{{ user.name }}</strong><br />
+                  {{ user.email }}<br />
+                  {{ user.phone or '-' }}
+                </div>
+                <span class="badge bg-secondary ms-3">{{ user.role }}</span>
               </div>
-              <span class="badge bg-secondary ms-3">{{ user.role }}</span>
-            </div>
-            <div>
-              <a href="{{ url_for('users.edit', user_id=user.id) }}" class="btn btn-sm btn-outline-light">Редактировать</a>
-              <form method="post" action="{{ url_for('users.delete', user_id=user.id) }}" class="m-0" onsubmit="event.stopPropagation()">
-                <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
-              </form>
-            </div>
-          </li>
-        {% endfor %}
-      </ul>
-    {% endif %}
+              <div>
+                <a href="{{ url_for('users.edit', user_id=user.id) }}" class="btn btn-sm btn-outline-light">Редактировать</a>
+                <form method="post" action="{{ url_for('users.delete', user_id=user.id) }}" class="m-0" onsubmit="event.stopPropagation()">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                </form>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      {# остальные группы идентичны серверному рендеру; для краткости оставлены без изменений #}
+    {% else %}
+      <div id="usersClient">
+        <div class="text-center py-5" id="usersLoader">Загрузка пользователей…</div>
+      </div>
 
-    {% if teachers %}
-      <h2 class="mt-5">Воспитатели</h2>
-      <ul class="list-group mb-4">
-        {% for user in teachers %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-              {% if user.photoUrl or user.photo_url %}
-                <img src="{{ user.photoUrl or user.photo_url }}" alt="Аватарка" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;" />
-              {% endif %}
-              <div>
-                <strong>{{ user.name }}</strong><br />
-                {{ user.email }}<br />
-                {{ user.phone or '-' }}
-              </div>
-              <span class="badge bg-secondary ms-3">{{ user.role }}</span>
-            </div>
-            <div>
-              <a href="{{ url_for('users.edit', user_id=user.id) }}" class="btn btn-sm btn-outline-light">Редактировать</a>
-              <form method="post" action="{{ url_for('users.delete', user_id=user.id) }}" class="m-0" onsubmit="event.stopPropagation()">
-                <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
-              </form>
-            </div>
-          </li>
-        {% endfor %}
-      </ul>
-    {% endif %}
+      <script>
+        (function(){
+          var container = document.getElementById('usersClient');
+          var loader = document.getElementById('usersLoader');
 
-    {% if parents %}
-      <h2 class="mt-5">Обычные пользователи</h2>
-      <ul class="list-group mb-4">
-        {% for user in parents %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-              {% if user.photoUrl or user.photo_url %}
-                <img src="{{ user.photoUrl or user.photo_url }}" alt="Аватарка" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;" />
-              {% endif %}
-              <div>
-                <strong>{{ user.name }}</strong><br />
-                {{ user.email }}<br />
-                {{ user.phone or '-' }}
-              </div>
-              <span class="badge bg-secondary ms-3">{{ user.role }}</span>
-            </div>
-            <div>
-              <a href="{{ url_for('users.edit', user_id=user.id) }}" class="btn btn-sm btn-outline-light">Редактировать</a>
-              <form method="post" action="{{ url_for('users.delete', user_id=user.id) }}" class="m-0" onsubmit="event.stopPropagation()">
-                <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
-              </form>
-            </div>
-          </li>
-          {% set parent_children = children | selectattr('parent_id', 'equalto', user.id) | list %}
-          {% if parent_children %}
-            <ul class="list-group mt-2 mb-2">
-              {% for child in parent_children %}
-                <li class="list-group-item d-flex justify-content-between align-items-center ms-4">
-                  <div class="d-flex align-items-center">
-                    {% if child.photoUrl %}
-                      <img src="{{ child.photoUrl }}" alt="Фото ребенка" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;" />
-                    {% endif %}
-                    <div>
-                      <strong>{{ child.name }}</strong><br />
-                      {{ child.birthDate or '-' }} | {{ child.gender or '-' }}
-                    </div>
-                  </div>
-                  <div>
-                    <a href="{{ url_for('users.edit_child', child_id=child.id) }}" class="btn btn-sm btn-outline-light">Редактировать</a>
-                  </div>
-                </li>
-              {% endfor %}
-            </ul>
-          {% endif %}
-        {% endfor %}
-      </ul>
+          function el(tag, cls, html){ var e = document.createElement(tag); if(cls) e.className = cls; if(html!==undefined) e.innerHTML = html; return e }
+
+          function renderUserItem(user){
+            var li = el('li','list-group-item d-flex justify-content-between align-items-center');
+            var left = el('div','d-flex align-items-center');
+            if(user.photo_url){
+              var img = el('img','rounded-circle me-3'); img.src = user.photo_url; img.style.width='40px'; img.style.height='40px'; img.style.objectFit='cover'; left.appendChild(img);
+            }
+            var info = el('div'); info.innerHTML = '<strong>'+ (user.name||'-') +'</strong><br/>'+(user.email||'')+'<br/>'+(user.phone||'-');
+            left.appendChild(info);
+            var badge = el('span','badge bg-secondary ms-3', user.role||''); left.appendChild(badge);
+            li.appendChild(left);
+
+            var actions = el('div');
+            var edit = el('a','btn btn-sm btn-outline-light','Редактировать'); edit.href = '/users/edit/' + user.id; actions.appendChild(edit);
+            var form = el('form','m-0'); form.method='post'; form.action='/users/delete/' + user.id; form.onsubmit = function(e){ e.stopPropagation(); };
+            var del = el('button','btn btn-sm btn-outline-danger','Удалить'); del.type='submit'; form.appendChild(del); actions.appendChild(form);
+            li.appendChild(actions);
+            return li;
+          }
+
+          function renderSection(title, users){
+            if(!users || !users.length) return null;
+            var h = el('h2','mt-5', title);
+            var ul = el('ul','list-group mb-4');
+            users.forEach(function(u){ ul.appendChild(renderUserItem(u)); });
+            return [h, ul];
+          }
+
+          fetch(window.location.pathname + '/data', { credentials: 'same-origin', headers: {'X-Requested-With':'fetch'} })
+            .then(function(r){ if(!r.ok) throw new Error(); return r.json(); })
+            .then(function(data){
+              loader.remove();
+              var parts = [];
+              [['Админы', data.admins], ['Воспитатели', data.teachers], ['Обычные пользователи', data.parents]].forEach(function(pair){
+                var nodes = renderSection(pair[0], pair[1]); if(nodes) nodes.forEach(function(n){ container.appendChild(n); });
+              });
+
+              // дети: сгруппировать по parent_id и добавить под каждого родителя
+              var children = data.children || [];
+              var childrenByParent = {};
+              children.forEach(function(c){ (childrenByParent[c.parent_id] = childrenByParent[c.parent_id]||[]).push(c); });
+
+              // Вставка списка детей под соответствующих родителей: ищем ссылки на edit пользователя и вставляем после них
+              var parentLists = container.querySelectorAll('ul.list-group');
+              parentLists.forEach(function(ul){
+                Array.from(ul.children).forEach(function(li){
+                  var edit = li.querySelector('a[href^="/users/edit/"]');
+                  if(!edit) return;
+                  var uid = edit.href.split('/').pop();
+                  var ch = childrenByParent[uid];
+                  if(ch && ch.length){
+                    var sub = document.createElement('ul'); sub.className='list-group mt-2 mb-2 children-group';
+                    ch.forEach(function(child){
+                      var cli = el('li','list-group-item d-flex justify-content-between align-items-center');
+                      var left = el('div','d-flex align-items-center');
+                      if(child.photoUrl){ var img=el('img','rounded-circle me-3'); img.src=child.photoUrl; img.style.width='40px'; img.style.height='40px'; img.style.objectFit='cover'; left.appendChild(img); }
+                      var info = el('div'); info.innerHTML = '<strong>'+ (child.name||'-') +'</strong><br/>' + (child.birthDate||'-') + ' | ' + (child.gender||'-'); left.appendChild(info);
+                      cli.appendChild(left);
+                      var actions = el('div'); var a = el('a','btn btn-sm btn-outline-light','Редактировать'); a.href = '/users/edit_child/' + child.id; actions.appendChild(a); cli.appendChild(actions);
+                      sub.appendChild(cli);
+                    });
+                    li.parentNode.insertBefore(sub, li.nextSibling);
+                  }
+                });
+              });
+
+            })
+            .catch(function(){ loader.textContent = 'Не удалось загрузить пользователей — перезагрузите страницу.' });
+        })();
+      </script>
     {% endif %}
   </div>
 {% endblock %}

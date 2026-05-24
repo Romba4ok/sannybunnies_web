@@ -1,4 +1,5 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, request, url_for, jsonify
+from template_utils import stream_template
 from firebase_admin import firestore
 
 from config import UPLOAD_FOLDER
@@ -31,11 +32,46 @@ def _save_photo(file, folder_path):
 @users_bp.route('/')
 @login_required
 def index():
-    admins = get_users_by_role('admin')
-    teachers = get_users_by_role('teacher')
-    parents = get_users_by_role('parent')
+    # Отдаём минимальную страницу; данные подгружает JS через /users/data
+    return stream_template('users/users.html', section='Пользователи')
+
+
+@users_bp.route('/data')
+@login_required
+def data():
+    users = get_collection_items('users')
+    admins = [u for u in users if u.get('role') == 'admin']
+    teachers = [u for u in users if u.get('role') == 'teacher']
+    parents = [u for u in users if u.get('role') in ['parent', 'user']]
     children = get_children_with_parent()
-    return render_template('users/users.html', admins=admins, teachers=teachers, parents=parents, children=children, section='Пользователи')
+
+    # Сокращаем поля для передачи
+    def slim(u):
+        return {
+            'id': u.get('id'),
+            'name': u.get('name'),
+            'email': u.get('email'),
+            'phone': u.get('phone') or u.get('phoneNumber'),
+            'role': u.get('role'),
+            'photo_url': u.get('photoUrl') or u.get('photo_url'),
+        }
+
+    def slim_child(c):
+        return {
+            'id': c.get('id'),
+            'name': c.get('name'),
+            'birthDate': c.get('birthDate'),
+            'gender': c.get('gender'),
+            'parent_id': c.get('parent_id'),
+            'photoUrl': c.get('photoUrl') or c.get('photo_url'),
+        }
+
+    return jsonify({
+        'admins': [slim(u) for u in admins],
+        'teachers': [slim(u) for u in teachers],
+        'parents': [slim(u) for u in parents],
+        'children': [slim_child(c) for c in children],
+    })
 
 
 @users_bp.route('/add', methods=['POST'])
@@ -91,7 +127,7 @@ def edit(user_id):
         return redirect(url_for('users.index'))
 
     user = get_document('users', user_id)
-    return render_template('users/edit_user.html', user=user)
+    return stream_template('users/edit_user.html', user=user)
 
 
 @users_bp.route('/delete/<user_id>', methods=['POST'])
@@ -156,4 +192,4 @@ def edit_child(child_id, parent_id=None):
     groups = get_collection_items('groups')
     if not parent_id:
         parent_id = child.get('parent_id') if child else None
-    return render_template('users/edit_child.html', child=child, parent_id=parent_id, groups=groups)
+    return stream_template('users/edit_child.html', child=child, parent_id=parent_id, groups=groups)

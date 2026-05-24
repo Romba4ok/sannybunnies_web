@@ -69,10 +69,57 @@ def normalize_document(doc):
     return normalized
 
 
-def get_collection_items(collection_name):
+def iter_collection_items(collection_name):
     db = get_firestore()
     docs = db.collection(collection_name).stream(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
-    return [normalize_document(doc) for doc in docs]
+    for doc in docs:
+        yield normalize_document(doc)
+
+
+def iter_users_by_role(role):
+    for user in iter_collection_items('users'):
+        if role == 'parent':
+            if user.get('role') in ['parent', 'user']:
+                yield user
+        elif user.get('role') == role:
+            yield user
+
+
+def iter_children_with_parent():
+    db = get_firestore()
+    # Загрузка всех пользователей и групп один раз, чтобы избежать N+1 запросов
+    user_docs = db.collection('users').stream(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
+    users_map = {doc.id: (doc.to_dict() or {}) for doc in user_docs}
+
+    group_docs = db.collection('groups').stream(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
+    groups_map = {doc.id: (doc.to_dict() or {}) for doc in group_docs}
+
+    docs = db.collection('children').stream(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
+    for doc in docs:
+        child = normalize_document(doc)
+
+        parent_id = child.get('parent_id') or child.get('parent_uid')
+        parent_data = users_map.get(parent_id, {}) if parent_id else {}
+
+        parent_name = parent_data.get('name') or parent_data.get('email') or parent_id
+        child['parent_name'] = parent_name
+        child['parent_id'] = parent_id
+        child['parent_phone'] = parent_data.get('phone') or parent_data.get('phoneNumber')
+        child['parent_photo'] = parent_data.get('photoUrl') or parent_data.get('photo_url')
+        child['parent_email'] = parent_data.get('email')
+
+        group_id = child.get('group_id')
+        if group_id:
+            child['group_name'] = groups_map.get(group_id, {}).get('name')
+
+        if not child.get('name'):
+            child['name'] = child.get('child_name') or child.get('first_name') or child.get('last_name') or child.get('email')
+
+        yield child
+
+
+def get_collection_items(collection_name):
+    return list(iter_collection_items(collection_name))
 
 
 def get_users_by_role(role):
@@ -83,36 +130,7 @@ def get_users_by_role(role):
 
 
 def get_children_with_parent():
-    db = get_firestore()
-    children = []
-    docs = db.collection('children').stream(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
-    for doc in docs:
-        child = normalize_document(doc)
-
-        parent_id = child.get('parent_id') or child.get('parent_uid')
-        parent_data = {}
-        if parent_id:
-            parent_doc = db.collection('users').document(parent_id).get(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
-            if parent_doc.exists:
-                parent_data = parent_doc.to_dict() or {}
-
-        parent_name = parent_data.get('name') or parent_data.get('email') or parent_id
-        child['parent_name'] = parent_name
-        child['parent_id'] = parent_id
-        child['parent_phone'] = parent_data.get('phone') or parent_data.get('phoneNumber')
-        child['parent_photo'] = parent_data.get('photoUrl') or parent_data.get('photo_url')
-        child['parent_email'] = parent_data.get('email')
-
-        if child.get('group_id'):
-            group_doc = db.collection('groups').document(child['group_id']).get(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
-            group_data = group_doc.to_dict() if group_doc and group_doc.exists else {}
-            child['group_name'] = group_data.get('name')
-
-        if not child.get('name'):
-            child['name'] = child.get('child_name') or child.get('first_name') or child.get('last_name') or child.get('email')
-
-        children.append(child)
-    return children
+    return list(iter_children_with_parent())
 
 
 def get_document(collection_name, doc_id):
