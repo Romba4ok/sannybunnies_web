@@ -15,28 +15,10 @@
   </div>
 
   {% if items %}
-    <div class="reviews-filter-panel">
-      <div class="reviews-filter-field">
-        <label for="reviewsSearch" class="form-label">Поиск</label>
-        <input type="search" class="form-control" id="reviewsSearch" placeholder="Имя, текст, ID..." />
-      </div>
-      <div class="reviews-filter-field reviews-filter-field--rating">
-        <label for="reviewsRatingFilter" class="form-label">Оценка</label>
-        <select class="form-select" id="reviewsRatingFilter">
-          <option value="all">Все</option>
-          <option value="5">5 звезд</option>
-          <option value="4">4 звезды</option>
-          <option value="3">3 звезды</option>
-          <option value="2">2 звезды</option>
-          <option value="1">1 звезда</option>
-        </select>
-      </div>
-    </div>
-
     <div class="reviews-grid">
       {% for item in items %}
         {% set rating = item.rating|default(0)|int %}
-        <article class="review-card" data-rating="{{ rating }}" data-search="{{ (item.userName ~ ' ' ~ item.text ~ ' ' ~ item.id)|lower|e }}">
+        <article class="review-card">
           <div class="review-card__head">
             <div class="review-author">
               <div class="review-avatar">
@@ -73,49 +55,10 @@
         </article>
       {% endfor %}
     </div>
-
-    <div class="reviews-empty reviews-empty--filtered" id="reviewsFilteredEmpty" hidden>
-      <h2>Отзывы не найдены</h2>
-      <p>Попробуйте изменить поисковый запрос или фильтр оценки.</p>
-    </div>
   {% else %}
     <div class="reviews-empty">
       <h2>Пока нет отзывов</h2>
       <p>Когда родители оставят первые оценки, они появятся здесь.</p>
     </div>
   {% endif %}
-
-  <script>
-    (function(){
-      var search = document.getElementById('reviewsSearch');
-      var rating = document.getElementById('reviewsRatingFilter');
-      var cards = Array.from(document.querySelectorAll('.review-card'));
-      var total = document.querySelector('.reviews-total span');
-      var empty = document.getElementById('reviewsFilteredEmpty');
-
-      function normalize(value){
-        return String(value || '').toLowerCase().trim();
-      }
-
-      function applyFilters(){
-        var query = normalize(search && search.value);
-        var ratingValue = rating ? rating.value : 'all';
-        var visible = 0;
-
-        cards.forEach(function(card){
-          var matchesText = !query || normalize(card.dataset.search).indexOf(query) !== -1;
-          var matchesRating = ratingValue === 'all' || card.dataset.rating === ratingValue;
-          var show = matchesText && matchesRating;
-          card.hidden = !show;
-          if(show) visible += 1;
-        });
-
-        if(total) total.textContent = visible;
-        if(empty) empty.hidden = visible !== 0;
-      }
-
-      if(search) search.addEventListener('input', applyFilters);
-      if(rating) rating.addEventListener('change', applyFilters);
-    })();
-  </script>
 {% endblock %}
