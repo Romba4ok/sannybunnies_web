@@ -1,27 +1,73 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-  <form method="post" action="{{ url_for('kindergarten.index') }}" class="card p-4 mb-4 form-card">
-    <div class="card-body">
-      <div class="mb-3">
+  <div class="row align-items-center mb-4 g-3">
+    <div class="col-md-8">
+      <h1 class="h3 mb-0 text-white fw-bold">Информация садика</h1>
+      <p class="text-muted mb-0">Обновляйте основные данные, которые видят родители: название, контакты, адрес и график.</p>
+    </div>
+    <div class="col-md-4 d-flex justify-content-md-end justify-content-start">
+      <div class="kindergarten-status">
+        <span>Профиль</span>
+        <small>активен</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="kindergarten-page">
+    <section class="kindergarten-preview">
+      <div class="kindergarten-preview__mark">
+        <span>{{ (info.name or 'С')[:1] }}</span>
+      </div>
+
+      <div class="kindergarten-preview__body">
+        <span class="kindergarten-label">Карточка садика</span>
+        <h2>{{ info.name or 'Название не указано' }}</h2>
+
+        <div class="kindergarten-preview__grid">
+          <div class="kindergarten-info-pill">
+            <span>Телефон</span>
+            <strong>{{ info.phone or '-' }}</strong>
+          </div>
+          <div class="kindergarten-info-pill">
+            <span>Адрес</span>
+            <strong>{{ info.address or '-' }}</strong>
+          </div>
+        </div>
+
+        <div class="kindergarten-schedule-preview">
+          <span>График работы</span>
+          <p>{{ info.schedule or 'График пока не указан.' }}</p>
+        </div>
+      </div>
+    </section>
+
+    <form method="post" action="{{ url_for('kindergarten.index') }}" class="kindergarten-form">
+      <div class="kindergarten-form__section">
         <label for="name" class="form-label">Название садика</label>
         <input type="text" class="form-control" id="name" name="name" value="{{ info.name }}" required />
       </div>
-      <div class="mb-3">
-        <label for="phone" class="form-label">Номер телефона</label>
-        <input type="text" class="form-control" id="phone" name="phone" value="{{ info.phone }}" required />
+
+      <div class="kindergarten-form__grid">
+        <div class="kindergarten-form__section">
+          <label for="phone" class="form-label">Номер телефона</label>
+          <input type="text" class="form-control" id="phone" name="phone" value="{{ info.phone }}" required />
+        </div>
+
+        <div class="kindergarten-form__section">
+          <label for="address" class="form-label">Адрес</label>
+          <input type="text" class="form-control" id="address" name="address" value="{{ info.address }}" required />
+        </div>
       </div>
-      <div class="mb-3">
-        <label for="address" class="form-label">Адрес</label>
-        <input type="text" class="form-control" id="address" name="address" value="{{ info.address }}" required />
-      </div>
-      <div class="mb-3">
+
+      <div class="kindergarten-form__section">
         <label for="schedule" class="form-label">График работы</label>
-        <textarea class="form-control" id="schedule" name="schedule" rows="4" required>{{ info.schedule }}</textarea>
+        <textarea class="form-control" id="schedule" name="schedule" rows="6" required>{{ info.schedule }}</textarea>
       </div>
-    </div>
-    <div class="card-footer d-flex justify-content-end">
-      <button type="submit" class="btn btn-primary">Сохранить</button>
-    </div>
-  </form>
+
+      <div class="kindergarten-form__footer">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
 {% endblock %}

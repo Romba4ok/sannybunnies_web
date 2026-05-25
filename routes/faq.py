@@ -10,7 +10,7 @@ faq_bp = Blueprint('faq', __name__, template_folder='../templates')
 @faq_bp.route('/')
 @login_required
 def index():
-    items = iter_collection_items('faq')
+    items = list(iter_collection_items('faq'))
     return stream_template('faq/faq.html', items=items, section='Часто задаваемые вопросы')
 
 

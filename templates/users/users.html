@@ -1,21 +1,42 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-  <form method="post" action="{{ url_for('users.add') }}" enctype="multipart/form-data" class="mb-4 users-form">
-    <div class="row g-3">
-      <div class="col-md-2">
+  <div class="row align-items-center mb-4 g-3">
+    <div class="col-md-8">
+      <h1 class="h3 mb-0 text-white fw-bold">Пользователи</h1>
+      <p class="text-muted mb-0">Добавляйте администраторов, воспитателей и родителей, а детей просматривайте прямо под профилями родителей.</p>
+    </div>
+    <div class="col-md-4 d-flex justify-content-md-end justify-content-start">
+      <div class="users-total" id="usersTotal">
+        <span>...</span>
+        <small>загрузка</small>
+      </div>
+    </div>
+  </div>
+
+  <form method="post" action="{{ url_for('users.add') }}" enctype="multipart/form-data" class="users-create-panel">
+    <div class="users-create-panel__head">
+      <div>
+        <span class="users-label">Новый профиль</span>
+        <h2>Добавить пользователя</h2>
+      </div>
+      <button type="submit" class="btn btn-primary">Добавить</button>
+    </div>
+
+    <div class="users-create-grid">
+      <div class="users-field">
         <label for="name" class="form-label">Имя</label>
         <input type="text" class="form-control" id="name" name="name" placeholder="Имя" required />
       </div>
-      <div class="col-md-2">
+      <div class="users-field">
         <label for="email" class="form-label">Email</label>
         <input type="email" class="form-control" id="email" name="email" placeholder="Email" required />
       </div>
-      <div class="col-md-2">
+      <div class="users-field">
         <label for="phone" class="form-label">Телефон</label>
         <input type="tel" class="form-control" id="phone" name="phone" placeholder="+7 (XXX) XXX XX XX" />
       </div>
-      <div class="col-md-2">
+      <div class="users-field">
         <label for="role" class="form-label">Роль</label>
         <select class="form-select" id="role" name="role">
           <option value="user">user</option>
@@ -23,11 +44,11 @@
           <option value="admin">admin</option>
         </select>
       </div>
-      <div class="col-md-2">
+      <div class="users-field">
         <label for="password" class="form-label">Пароль</label>
         <input type="password" class="form-control" id="password" name="password" placeholder="Пароль" required />
       </div>
-      <div class="col-md-2">
+      <div class="users-field">
         <label for="photo" class="form-label">Аватарка</label>
         <div class="custom-file custom-file--small">
           <button type="button" class="custom-file__button" onclick="document.getElementById('photo').click()">Выбрать файл</button>
@@ -36,8 +57,26 @@
         </div>
       </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-3">Добавить пользователя</button>
   </form>
+
+  <div id="usersClient" class="users-client">
+    <div class="users-filter-panel">
+      <div class="users-filter-field">
+        <label for="usersSearch" class="form-label">Поиск</label>
+        <input type="search" class="form-control" id="usersSearch" placeholder="Имя, email, телефон, ребенок..." />
+      </div>
+      <div class="users-filter-field users-filter-field--role">
+        <label for="usersRoleFilter" class="form-label">Роль</label>
+        <select class="form-select" id="usersRoleFilter">
+          <option value="all">Все</option>
+          <option value="admin">Админы</option>
+          <option value="teacher">Воспитатели</option>
+          <option value="parent">Родители</option>
+        </select>
+      </div>
+    </div>
+    <div class="users-loader" id="usersLoader">Загрузка пользователей...</div>
+  </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function(){
@@ -50,119 +89,218 @@
         });
       }
     });
+
+    (function(){
+      var container = document.getElementById('usersClient');
+      var loader = document.getElementById('usersLoader');
+      var total = document.getElementById('usersTotal');
+      var searchInput = document.getElementById('usersSearch');
+      var roleFilter = document.getElementById('usersRoleFilter');
+      var loadedData = null;
+      var loadedChildrenByParent = {};
+
+      function el(tag, cls, text){
+        var node = document.createElement(tag);
+        if(cls) node.className = cls;
+        if(text !== undefined) node.textContent = text;
+        return node;
+      }
+
+      function roleLabel(role){
+        if(role === 'admin') return 'Админ';
+        if(role === 'teacher') return 'Воспитатель';
+        return 'Родитель';
+      }
+
+      function normalize(value){
+        return String(value || '').toLowerCase().trim();
+      }
+
+      function childMatches(child, query){
+        if(!query) return true;
+        return [
+          child.name,
+          child.birthDate,
+          child.gender
+        ].some(function(value){ return normalize(value).indexOf(query) !== -1; });
+      }
+
+      function userMatches(user, query, childrenByParent){
+        if(!query) return true;
+        var ownMatch = [
+          user.name,
+          user.email,
+          user.phone,
+          user.role,
+          user.id
+        ].some(function(value){ return normalize(value).indexOf(query) !== -1; });
+        if(ownMatch) return true;
+        return (childrenByParent[user.id] || []).some(function(child){ return childMatches(child, query); });
+      }
+
+      function avatar(name, photoUrl, cls){
+        var wrap = el('div', cls || 'user-avatar');
+        if(photoUrl){
+          var img = el('img');
+          img.src = photoUrl;
+          img.alt = 'Аватар';
+          wrap.appendChild(img);
+        } else {
+          wrap.appendChild(el('span', '', (name || '?').slice(0, 1)));
+        }
+        return wrap;
+      }
+
+      function infoItem(label, value){
+        var box = el('div', 'user-info-item');
+        box.appendChild(el('span', '', label));
+        box.appendChild(el('strong', '', value || '-'));
+        return box;
+      }
+
+      function renderChild(child){
+        var card = el('article', 'user-child-card');
+        card.appendChild(avatar(child.name, child.photoUrl, 'user-child-avatar'));
+
+        var body = el('div', 'user-child-body');
+        body.appendChild(el('strong', '', child.name || 'Ребенок'));
+        body.appendChild(el('span', '', (child.birthDate || '-') + ' | ' + (child.gender || '-')));
+        card.appendChild(body);
+
+        var action = el('a', 'btn btn-sm btn-outline-light user-btn-edit', 'Редактировать');
+        action.href = '/users/edit_child/' + child.id;
+        card.appendChild(action);
+        return card;
+      }
+
+      function renderUser(user, childrenByParent){
+        var card = el('article', 'user-profile-card');
+        var head = el('div', 'user-profile-head');
+        head.appendChild(avatar(user.name, user.photo_url, 'user-avatar'));
+
+        var title = el('div', 'user-profile-title');
+        title.appendChild(el('span', 'users-label', roleLabel(user.role)));
+        title.appendChild(el('h2', '', user.name || 'Без имени'));
+        title.appendChild(el('small', '', 'ID: ' + (user.id || '-')));
+        head.appendChild(title);
+
+        var badge = el('div', 'user-role-badge', user.role || 'user');
+        head.appendChild(badge);
+        card.appendChild(head);
+
+        var grid = el('div', 'user-info-grid');
+        grid.appendChild(infoItem('Email', user.email || '-'));
+        grid.appendChild(infoItem('Телефон', user.phone || '-'));
+        card.appendChild(grid);
+
+        var actions = el('div', 'user-profile-actions');
+        var edit = el('a', 'btn btn-sm btn-outline-light user-btn-edit', 'Редактировать');
+        edit.href = '/users/edit/' + user.id;
+        actions.appendChild(edit);
+        var form = el('form', 'm-0');
+        form.method = 'post';
+        form.action = '/users/delete/' + user.id;
+        form.onsubmit = function(e){ e.stopPropagation(); return confirm('Удалить пользователя?'); };
+        var del = el('button', 'btn btn-sm btn-outline-danger user-btn-delete', 'Удалить');
+        del.type = 'submit';
+        form.appendChild(del);
+        actions.appendChild(form);
+        card.appendChild(actions);
+
+        var children = childrenByParent[user.id] || [];
+        if(children.length){
+          var childWrap = el('div', 'user-children-block');
+          var childHead = el('div', 'user-children-head');
+          childHead.appendChild(el('span', '', 'Дети'));
+          childHead.appendChild(el('strong', '', String(children.length)));
+          childWrap.appendChild(childHead);
+          children.forEach(function(child){ childWrap.appendChild(renderChild(child)); });
+          card.appendChild(childWrap);
+        }
+
+        return card;
+      }
+
+      function renderSection(title, users, childrenByParent){
+        if(!users || !users.length) return null;
+        var section = el('section', 'users-section');
+        var head = el('div', 'users-section__head');
+        head.appendChild(el('h2', '', title));
+        head.appendChild(el('span', '', String(users.length)));
+        section.appendChild(head);
+        var grid = el('div', 'users-grid');
+        users.forEach(function(user){ grid.appendChild(renderUser(user, childrenByParent)); });
+        section.appendChild(grid);
+        return section;
+      }
+
+      function visibleUsers(users, role, query, childrenByParent){
+        if(!users) return [];
+        return users.filter(function(user){
+          return (!role || role === 'all' || role === 'parent' || user.role === role) && userMatches(user, query, childrenByParent);
+        });
+      }
+
+      function removeRenderedSections(){
+        Array.from(container.querySelectorAll('.users-section, .users-empty')).forEach(function(node){ node.remove(); });
+      }
+
+      function renderAll(){
+        if(!loadedData) return;
+        removeRenderedSections();
+        var query = normalize(searchInput && searchInput.value);
+        var selectedRole = roleFilter ? roleFilter.value : 'all';
+        var sections = [
+          ['Админы', 'admin', loadedData.admins || []],
+          ['Воспитатели', 'teacher', loadedData.teachers || []],
+          ['Родители', 'parent', loadedData.parents || []]
+        ];
+        var visibleCount = 0;
+
+        sections.forEach(function(sectionData){
+          var title = sectionData[0];
+          var role = sectionData[1];
+          var users = selectedRole === 'all' || selectedRole === role
+            ? visibleUsers(sectionData[2], role, query, loadedChildrenByParent)
+            : [];
+          visibleCount += users.length;
+          var section = renderSection(title, users, loadedChildrenByParent);
+          if(section) container.appendChild(section);
+        });
+
+        if(total){
+          total.innerHTML = '';
+          total.appendChild(el('span', '', String(visibleCount)));
+          total.appendChild(el('small', '', query || selectedRole !== 'all' ? 'найдено' : 'пользователей'));
+        }
+
+        if(!container.querySelector('.users-section')){
+          container.appendChild(el('div', 'users-empty', 'Пользователи не найдены.'));
+        }
+      }
+
+      fetch(window.location.pathname.replace(/\/$/, '') + '/data', { credentials: 'same-origin', headers: {'X-Requested-With':'fetch'} })
+        .then(function(response){ if(!response.ok) throw new Error(); return response.json(); })
+        .then(function(data){
+          loader.remove();
+          var children = data.children || [];
+          var childrenByParent = {};
+          children.forEach(function(child){
+            var parentId = child.parent_id;
+            if(!parentId) return;
+            (childrenByParent[parentId] = childrenByParent[parentId] || []).push(child);
+          });
+
+          loadedData = data;
+          loadedChildrenByParent = childrenByParent;
+          renderAll();
+        })
+        .catch(function(){
+          loader.textContent = 'Не удалось загрузить пользователей. Перезагрузите страницу.';
+        });
+
+      if(searchInput) searchInput.addEventListener('input', renderAll);
+      if(roleFilter) roleFilter.addEventListener('change', renderAll);
+    })();
   </script>
-
-  <div class="table-responsive">
-    {% if admins is defined %}
-      {# Рендер со стороны сервера (обратная совместимость) #}
-      {% if admins %}
-        <h2 class="mt-5">Админы</h2>
-        <ul class="list-group mb-4">
-          {% for user in admins %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div class="d-flex align-items-center">
-                {% if user.photoUrl or user.photo_url %}
-                  <img src="{{ user.photoUrl or user.photo_url }}" alt="Аватарка" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;" />
-                {% endif %}
-                <div>
-                  <strong>{{ user.name }}</strong><br />
-                  {{ user.email }}<br />
-                  {{ user.phone or '-' }}
-                </div>
-                <span class="badge bg-secondary ms-3">{{ user.role }}</span>
-              </div>
-              <div>
-                <a href="{{ url_for('users.edit', user_id=user.id) }}" class="btn btn-sm btn-outline-light">Редактировать</a>
-                <form method="post" action="{{ url_for('users.delete', user_id=user.id) }}" class="m-0" onsubmit="event.stopPropagation()">
-                  <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
-                </form>
-              </div>
-            </li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-      {# остальные группы идентичны серверному рендеру; для краткости оставлены без изменений #}
-    {% else %}
-      <div id="usersClient">
-        <div class="text-center py-5" id="usersLoader">Загрузка пользователей…</div>
-      </div>
-
-      <script>
-        (function(){
-          var container = document.getElementById('usersClient');
-          var loader = document.getElementById('usersLoader');
-
-          function el(tag, cls, html){ var e = document.createElement(tag); if(cls) e.className = cls; if(html!==undefined) e.innerHTML = html; return e }
-
-          function renderUserItem(user){
-            var li = el('li','list-group-item d-flex justify-content-between align-items-center');
-            var left = el('div','d-flex align-items-center');
-            if(user.photo_url){
-              var img = el('img','rounded-circle me-3'); img.src = user.photo_url; img.style.width='40px'; img.style.height='40px'; img.style.objectFit='cover'; left.appendChild(img);
-            }
-            var info = el('div'); info.innerHTML = '<strong>'+ (user.name||'-') +'</strong><br/>'+(user.email||'')+'<br/>'+(user.phone||'-');
-            left.appendChild(info);
-            var badge = el('span','badge bg-secondary ms-3', user.role||''); left.appendChild(badge);
-            li.appendChild(left);
-
-            var actions = el('div');
-            var edit = el('a','btn btn-sm btn-outline-light','Редактировать'); edit.href = '/users/edit/' + user.id; actions.appendChild(edit);
-            var form = el('form','m-0'); form.method='post'; form.action='/users/delete/' + user.id; form.onsubmit = function(e){ e.stopPropagation(); };
-            var del = el('button','btn btn-sm btn-outline-danger','Удалить'); del.type='submit'; form.appendChild(del); actions.appendChild(form);
-            li.appendChild(actions);
-            return li;
-          }
-
-          function renderSection(title, users){
-            if(!users || !users.length) return null;
-            var h = el('h2','mt-5', title);
-            var ul = el('ul','list-group mb-4');
-            users.forEach(function(u){ ul.appendChild(renderUserItem(u)); });
-            return [h, ul];
-          }
-
-          fetch(window.location.pathname + '/data', { credentials: 'same-origin', headers: {'X-Requested-With':'fetch'} })
-            .then(function(r){ if(!r.ok) throw new Error(); return r.json(); })
-            .then(function(data){
-              loader.remove();
-              var parts = [];
-              [['Админы', data.admins], ['Воспитатели', data.teachers], ['Обычные пользователи', data.parents]].forEach(function(pair){
-                var nodes = renderSection(pair[0], pair[1]); if(nodes) nodes.forEach(function(n){ container.appendChild(n); });
-              });
-
-              // дети: сгруппировать по parent_id и добавить под каждого родителя
-              var children = data.children || [];
-              var childrenByParent = {};
-              children.forEach(function(c){ (childrenByParent[c.parent_id] = childrenByParent[c.parent_id]||[]).push(c); });
-
-              // Вставка списка детей под соответствующих родителей: ищем ссылки на edit пользователя и вставляем после них
-              var parentLists = container.querySelectorAll('ul.list-group');
-              parentLists.forEach(function(ul){
-                Array.from(ul.children).forEach(function(li){
-                  var edit = li.querySelector('a[href^="/users/edit/"]');
-                  if(!edit) return;
-                  var uid = edit.href.split('/').pop();
-                  var ch = childrenByParent[uid];
-                  if(ch && ch.length){
-                    var sub = document.createElement('ul'); sub.className='list-group mt-2 mb-2 children-group';
-                    ch.forEach(function(child){
-                      var cli = el('li','list-group-item d-flex justify-content-between align-items-center');
-                      var left = el('div','d-flex align-items-center');
-                      if(child.photoUrl){ var img=el('img','rounded-circle me-3'); img.src=child.photoUrl; img.style.width='40px'; img.style.height='40px'; img.style.objectFit='cover'; left.appendChild(img); }
-                      var info = el('div'); info.innerHTML = '<strong>'+ (child.name||'-') +'</strong><br/>' + (child.birthDate||'-') + ' | ' + (child.gender||'-'); left.appendChild(info);
-                      cli.appendChild(left);
-                      var actions = el('div'); var a = el('a','btn btn-sm btn-outline-light','Редактировать'); a.href = '/users/edit_child/' + child.id; actions.appendChild(a); cli.appendChild(actions);
-                      sub.appendChild(cli);
-                    });
-                    li.parentNode.insertBefore(sub, li.nextSibling);
-                  }
-                });
-              });
-
-            })
-            .catch(function(){ loader.textContent = 'Не удалось загрузить пользователей — перезагрузите страницу.' });
-        })();
-      </script>
-    {% endif %}
-  </div>
 {% endblock %}

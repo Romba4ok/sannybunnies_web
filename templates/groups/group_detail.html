@@ -1,58 +1,74 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-  <div class="d-flex justify-content-between align-items-start mb-4 gap-3">
-    <div>
-      <h1 class="h3 mb-1">{{ group.name or 'Группа' }}</h1>
-      <p class="text-muted mb-0">Карточка группы с воспитателями и детьми.</p>
-    </div>
-    <div class="d-flex gap-2 flex-wrap">
-      <a href="{{ url_for('groups.edit', group_id=group.id) }}" class="btn btn-primary">Редактировать</a>
-      <form method="post" action="{{ url_for('groups.delete', group_id=group.id) }}" class="m-0">
-        <button type="submit" class="btn btn-outline-danger">Удалить группу</button>
-      </form>
-      <a href="{{ url_for('groups.index') }}" class="btn btn-outline-light">Назад</a>
+  <div class="group-detail-header mb-4">
+    <div class="d-flex justify-content-between align-items-start gap-3">
+      <div>
+        <h1 class="h3 mb-1">{{ group.name or 'Группа' }}</h1>
+        <p class="text-muted mb-0">Карточка группы с воспитателями и детьми.</p>
+      </div>
+      <div class="d-flex gap-2 flex-wrap">
+        <a href="{{ url_for('groups.edit', group_id=group.id) }}" class="btn btn-primary">Редактировать</a>
+        <form method="post" action="{{ url_for('groups.delete', group_id=group.id) }}" class="m-0">
+          <button type="submit" class="btn btn-outline-danger">Удалить группу</button>
+        </form>
+        <a href="{{ url_for('groups.index') }}" class="btn btn-outline-light">Назад</a>
+      </div>
     </div>
   </div>
 
-  <div class="row gy-4">
-    <div class="col-12 col-xl-4">
-      <div class="card p-4">
-        <h2 class="h5 mb-3">Параметры</h2>
-        <p class="mb-2"><strong>Возраст:</strong> {{ group.age_from or '-' }} — {{ group.age_to or '-' }}</p>
-        <p class="mb-2"><strong>Воспитателей:</strong> {{ teachers | length }}</p>
-        <p class="mb-0"><strong>Детей:</strong> {{ children | length }}</p>
+  <div class="group-detail-wrapper">
+    <div class="group-detail-columns">
+      <div class="detail-hero card section-card p-4">
+        <div class="group-detail-top">
+          <div class="group-detail-info">
+            <div class="group-detail-label">Группа</div>
+            <h2 class="group-detail-name">{{ group.name or 'Группа' }}</h2>
+            <div class="group-detail-age">Возраст: {{ group.age_from or '-' }} — {{ group.age_to or '-' }}</div>
+          </div>
+          <div class="group-detail-chips">
+            <span class="detail-chip">Воспитателей: {{ teachers | length }}</span>
+            <span class="detail-chip">Детей: {{ children | length }}</span>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="col-12 col-xl-4">
-      <div class="card p-4">
-        <h2 class="h5 mb-3">Воспитатели</h2>
+
+      <div class="detail-section">
+      <div class="card section-card p-4">
+        <div class="section-header">
+          <h2 class="h5 mb-0">Воспитатели</h2>
+          <span class="section-count">{{ teachers | length }}</span>
+        </div>
         {% if teachers %}
-          <ul class="list-group list-group-flush">
+          <div class="section-list">
             {% for teacher in teachers %}
-              <li class="list-group-item bg-transparent border-0 py-2 px-0">
-                <div class="fw-bold">{{ teacher.name or teacher.email or teacher.id }}</div>
-                <div class="text-muted">{{ teacher.position or teacher.role or 'Воспитатель' }}</div>
-              </li>
+              <div class="detail-item">
+                <strong>{{ teacher.name or teacher.email or teacher.id }}</strong>
+                <span class="text-muted">{{ teacher.position or teacher.role or 'Воспитатель' }}</span>
+              </div>
             {% endfor %}
-          </ul>
+          </div>
         {% else %}
           <p class="text-muted">Пока нет воспитателей в этой группе.</p>
         {% endif %}
       </div>
     </div>
-    <div class="col-12 col-xl-4">
-      <div class="card p-4">
-        <h2 class="h5 mb-3">Дети</h2>
+
+    <div class="detail-section">
+      <div class="card section-card p-4">
+        <div class="section-header">
+          <h2 class="h5 mb-0">Дети</h2>
+          <span class="section-count">{{ children | length }}</span>
+        </div>
         {% if children %}
-          <ul class="list-group list-group-flush">
+          <div class="section-list">
             {% for child in children %}
-              <li class="list-group-item bg-transparent border-0 py-2 px-0">
-                <div class="fw-bold">{{ child.name or child.child_name or child.email or child.id }}</div>
-                <div class="text-muted">{{ child.parent_name or 'Родитель не найден' }}</div>
-              </li>
+              <div class="detail-item">
+                <strong>{{ child.name or child.child_name or child.email or child.id }}</strong>
+                <span class="text-muted">{{ child.parent_name or 'Родитель не найден' }}</span>
+              </div>
             {% endfor %}
-          </ul>
+          </div>
         {% else %}
           <p class="text-muted">Пока нет детей в этой группе.</p>
         {% endif %}

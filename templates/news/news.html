@@ -10,27 +10,30 @@
   </div>
 
   {% if items %}
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div class="news-grid g-4">
       {% for item in items %}
         <div class="col">
-          <div class="card h-100">
+          <article class="news-card h-100">
             {% if item.photo_url %}
-              <img src="{{ item.photo_url }}" class="card-img-top" alt="Фото новости" style="height: 200px; object-fit: cover;">
+              <div class="news-card-media">
+                <img src="{{ item.photo_url }}" alt="Фото новости">
+              </div>
             {% endif %}
-            <div class="card-body">
-              <h5 class="card-title">{{ item.headline or 'Новость' }}</h5>
-              <p class="card-text">{{ item.body or 'Описание отсутствует.' }}</p>
+            <div class="news-card-body">
+              <div class="news-card-label">Новость</div>
+              <h3 class="news-card-title">{{ item.headline or 'Новость' }}</h3>
+              <p class="news-card-text">{{ item.body or 'Описание отсутствует.' }}</p>
             </div>
-            <div class="card-footer d-flex justify-content-between align-items-center">
-              <small class="text-muted">{{ item.createdAt or item.created_at or '-' }}</small>
-              <div>
+            <div class="news-card-footer">
+              <span class="news-card-date">{{ item.createdAt or item.created_at or '-' }}</span>
+              <div class="news-card-actions">
                 <a href="{{ url_for('news.edit', news_id=item.id) }}" class="btn btn-sm btn-outline-light">Редактировать</a>
-                <form method="post" action="{{ url_for('news.delete', news_id=item.id) }}" class="d-inline" onsubmit="return confirm('Удалить новость?');">
+                <form method="post" action="{{ url_for('news.delete', news_id=item.id) }}" class="m-0" onsubmit="return confirm('Удалить новость?');">
                   <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
                 </form>
               </div>
             </div>
-          </div>
+          </article>
         </div>
       {% endfor %}
     </div>

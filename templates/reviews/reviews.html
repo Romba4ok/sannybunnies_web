@@ -1,35 +1,121 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-  <div class="table-responsive">
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Пользователь</th>
-          <th>Рейтинг</th>
-          <th>Текст</th>
-          <th>Действия</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item in items %}
-          <tr>
-            <td>{{ item.id }}</td>
-            <td>{{ item.userName or '-' }}</td>
-            <td>{{ item.rating or '-' }}</td>
-            <td>{{ item.text or '-' }}</td>
-            <td>
-              <div class="d-flex gap-2">
-                <a href="{{ url_for('reviews.edit', review_id=item.id) }}" class="btn btn-sm btn-outline-primary">Редактировать</a>
-                <form method="post" action="{{ url_for('reviews.delete', review_id=item.id) }}" class="m-0" onsubmit="return confirm('Вы уверены, что хотите удалить этот отзыв?')">
-                  <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
-                </form>
-              </div>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="row align-items-center mb-4 g-3">
+    <div class="col-md-8">
+      <h1 class="h3 mb-0 text-white fw-bold">Отзывы</h1>
+      <p class="text-muted mb-0">Просматривайте оценки родителей и быстро редактируйте опубликованные отзывы.</p>
+    </div>
+    <div class="col-md-4 d-flex justify-content-md-end justify-content-start">
+      <div class="reviews-total">
+        <span>{{ items|length }}</span>
+        <small>отзывов</small>
+      </div>
+    </div>
   </div>
+
+  {% if items %}
+    <div class="reviews-filter-panel">
+      <div class="reviews-filter-field">
+        <label for="reviewsSearch" class="form-label">Поиск</label>
+        <input type="search" class="form-control" id="reviewsSearch" placeholder="Имя, текст, ID..." />
+      </div>
+      <div class="reviews-filter-field reviews-filter-field--rating">
+        <label for="reviewsRatingFilter" class="form-label">Оценка</label>
+        <select class="form-select" id="reviewsRatingFilter">
+          <option value="all">Все</option>
+          <option value="5">5 звезд</option>
+          <option value="4">4 звезды</option>
+          <option value="3">3 звезды</option>
+          <option value="2">2 звезды</option>
+          <option value="1">1 звезда</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="reviews-grid">
+      {% for item in items %}
+        {% set rating = item.rating|default(0)|int %}
+        <article class="review-card" data-rating="{{ rating }}" data-search="{{ (item.userName ~ ' ' ~ item.text ~ ' ' ~ item.id)|lower|e }}">
+          <div class="review-card__head">
+            <div class="review-author">
+              <div class="review-avatar">
+                {% if item.userPhoto %}
+                  <img src="{{ item.userPhoto }}" alt="Фото пользователя" />
+                {% else %}
+                  <span>{{ (item.userName or '?')[:1] }}</span>
+                {% endif %}
+              </div>
+
+              <div class="review-author__info">
+                <h2>{{ item.userName or 'Неизвестный пользователь' }}</h2>
+                <span>ID: {{ item.id }}</span>
+              </div>
+            </div>
+
+            <div class="review-rating" aria-label="Оценка {{ rating }} из 5">
+              {% for star in range(1, 6) %}
+                <span class="{% if star <= rating %}is-active{% endif %}">★</span>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="review-card__body">
+            <p>{{ item.text or 'Текст отзыва отсутствует.' }}</p>
+          </div>
+
+          <div class="review-card__footer">
+            <a href="{{ url_for('reviews.edit', review_id=item.id) }}" class="btn btn-sm btn-outline-light review-btn-edit">Редактировать</a>
+            <form method="post" action="{{ url_for('reviews.delete', review_id=item.id) }}" class="m-0" onsubmit="return confirm('Вы уверены, что хотите удалить этот отзыв?')">
+              <button type="submit" class="btn btn-sm btn-outline-danger review-btn-delete">Удалить</button>
+            </form>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    <div class="reviews-empty reviews-empty--filtered" id="reviewsFilteredEmpty" hidden>
+      <h2>Отзывы не найдены</h2>
+      <p>Попробуйте изменить поисковый запрос или фильтр оценки.</p>
+    </div>
+  {% else %}
+    <div class="reviews-empty">
+      <h2>Пока нет отзывов</h2>
+      <p>Когда родители оставят первые оценки, они появятся здесь.</p>
+    </div>
+  {% endif %}
+
+  <script>
+    (function(){
+      var search = document.getElementById('reviewsSearch');
+      var rating = document.getElementById('reviewsRatingFilter');
+      var cards = Array.from(document.querySelectorAll('.review-card'));
+      var total = document.querySelector('.reviews-total span');
+      var empty = document.getElementById('reviewsFilteredEmpty');
+
+      function normalize(value){
+        return String(value || '').toLowerCase().trim();
+      }
+
+      function applyFilters(){
+        var query = normalize(search && search.value);
+        var ratingValue = rating ? rating.value : 'all';
+        var visible = 0;
+
+        cards.forEach(function(card){
+          var matchesText = !query || normalize(card.dataset.search).indexOf(query) !== -1;
+          var matchesRating = ratingValue === 'all' || card.dataset.rating === ratingValue;
+          var show = matchesText && matchesRating;
+          card.hidden = !show;
+          if(show) visible += 1;
+        });
+
+        if(total) total.textContent = visible;
+        if(empty) empty.hidden = visible !== 0;
+      }
+
+      if(search) search.addEventListener('input', applyFilters);
+      if(rating) rating.addEventListener('change', applyFilters);
+    })();
+  </script>
 {% endblock %}

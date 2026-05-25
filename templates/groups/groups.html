@@ -1,43 +1,70 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h1 class="h3 mb-0">Группы</h1>
-      <p class="text-muted mb-0">Добавляйте и редактируйте группы в отдельном окне.</p>
+  <div class="row align-items-center mb-4 g-3">
+    <div class="col-md-8">
+      <h1 class="h3 mb-0 text-white fw-bold">Группы</h1>
+      <p class="text-muted mb-0">Управляйте группами, возрастными диапазонами, детьми и воспитателями.</p>
     </div>
-    <a href="{{ url_for('groups.add_form') }}" class="btn btn-primary">Добавить группу</a>
-  </div>
-
-
-
-  <div class="group-grid">
-    {% for item in items %}
-      <div class="group-card group-card-clickable" onclick="window.location='{{ url_for('groups.view', group_id=item.id) }}'">
-        <div class="group-card__title">{{ item.name or 'Группа' }}</div>
-        <div class="group-card__meta">
-          <div class="group-card__meta-item">
-            <div class="group-card__count">{{ item.children_uids | default([]) | length }}</div>
-            <div class="group-card__label">Детей в группе</div>
-          </div>
-          <div class="group-card__meta-item">
-            <div class="group-card__count">{{ item.teacher_uids | default([]) | length }}</div>
-            <div class="group-card__label">Педагог</div>
-          </div>
-        </div>
-        <div class="group-card__footer">
-          <div class="group-card__footer-info">
-            <div class="group-card__label">Возраст</div>
-            <div>{{ item.age_from or '-' }} — {{ item.age_to or '-' }}</div>
-          </div>
-          <div class="d-flex gap-2 flex-wrap">
-            <a href="{{ url_for('groups.edit', group_id=item.id) }}" class="btn btn-sm btn-outline-light" onclick="event.stopPropagation()">Редактировать</a>
-            <form method="post" action="{{ url_for('groups.delete', group_id=item.id) }}" class="m-0" onsubmit="event.stopPropagation()">
-              <button type="submit" class="btn btn-sm btn-outline-light">Удалить</button>
-            </form>
-          </div>
-        </div>
+    <div class="col-md-4 d-flex gap-2 justify-content-md-end justify-content-start flex-wrap">
+      <div class="groups-total">
+        <span>{{ items|length }}</span>
+        <small>групп</small>
       </div>
-    {% endfor %}
+      <a href="{{ url_for('groups.add_form') }}" class="btn btn-sm btn-primary px-3 fw-medium">Добавить группу</a>
+    </div>
   </div>
+
+  {% if items %}
+    <div class="groups-grid">
+      {% for item in items %}
+        {% set children_count = item.children_uids | default([]) | length %}
+        {% set teachers_count = item.teacher_uids | default([]) | length %}
+
+        <article class="group-profile-card" onclick="window.location='{{ url_for('groups.view', group_id=item.id) }}'">
+          <div class="group-profile-card__accent">
+            <span>{{ (item.name or 'Г')[:1] }}</span>
+          </div>
+
+          <div class="group-profile-card__content">
+            <div class="group-profile-head">
+              <div>
+                <span class="group-label">Группа</span>
+                <h2>{{ item.name or 'Группа' }}</h2>
+              </div>
+              <span class="group-id">ID: {{ item.id }}</span>
+            </div>
+
+            <div class="group-age-pill">
+              Возраст: {{ item.age_from or '-' }} - {{ item.age_to or '-' }}
+            </div>
+
+            <div class="group-stat-grid">
+              <div class="group-stat-item">
+                <span>{{ children_count }}</span>
+                <small>детей</small>
+              </div>
+              <div class="group-stat-item">
+                <span>{{ teachers_count }}</span>
+                <small>педагогов</small>
+              </div>
+            </div>
+
+            <div class="group-profile-actions">
+              <a href="{{ url_for('groups.view', group_id=item.id) }}" class="btn btn-sm btn-outline-light group-btn-view" onclick="event.stopPropagation()">Открыть</a>
+              <a href="{{ url_for('groups.edit', group_id=item.id) }}" class="btn btn-sm btn-outline-light group-btn-edit" onclick="event.stopPropagation()">Редактировать</a>
+              <form method="post" action="{{ url_for('groups.delete', group_id=item.id) }}" class="m-0" onsubmit="event.stopPropagation(); return confirm('Удалить группу?')">
+                <button type="submit" class="btn btn-sm btn-outline-danger group-btn-delete">Удалить</button>
+              </form>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="groups-empty">
+      <h2>Группы пока не добавлены</h2>
+      <p>Создайте первую группу, чтобы распределять детей и воспитателей.</p>
+    </div>
+  {% endif %}
 {% endblock %}

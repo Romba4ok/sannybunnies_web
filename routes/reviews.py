@@ -10,7 +10,7 @@ reviews_bp = Blueprint('reviews', __name__, template_folder='../templates')
 @reviews_bp.route('/')
 @login_required
 def index():
-    items = iter_collection_items('reviews')
+    items = list(iter_collection_items('reviews'))
     return stream_template('reviews/reviews.html', items=items, section='Отзывы')
 
 

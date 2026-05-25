@@ -1,44 +1,74 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="mb-0">Воспитатели</h1>
-    <a href="{{ url_for('teachers.add_form') }}" class="btn btn-primary">Добавить воспитателя</a>
+  <div class="row align-items-center mb-4 g-3">
+    <div class="col-md-8">
+      <h1 class="h3 mb-0 text-white fw-bold">Воспитатели</h1>
+      <p class="text-muted mb-0">Управляйте профилями педагогов, контактами и описаниями для групп детского сада.</p>
+    </div>
+    <div class="col-md-4 d-flex gap-2 justify-content-md-end justify-content-start flex-wrap">
+      <div class="teachers-total">
+        <span>{{ teachers|length }}</span>
+        <small>педагогов</small>
+      </div>
+      <a href="{{ url_for('teachers.add_form') }}" class="btn btn-sm btn-primary px-3 fw-medium">Добавить воспитателя</a>
+    </div>
   </div>
 
-  <div class="row g-4">
-    {% if teachers %}
-      <div class="table-responsive">
-        <ul class="list-group mb-4">
-          {% for teacher in teachers %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <div class="d-flex align-items-center">
-                {% if teacher.photoUrl or teacher.photo_url %}
-                  <img src="{{ teacher.photoUrl or teacher.photo_url }}" alt="Аватарка" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;" />
-                {% endif %}
-                <div>
-                  <strong>{{ teacher.name }}</strong><br />
-                  {{ teacher.email or '-' }}<br />
-                  {{ teacher.phone or '-' }}
-                </div>
-                <span class="badge bg-secondary ms-3">{{ teacher.role or 'teacher' }}</span>
+  {% if teachers %}
+    <div class="teachers-grid">
+      {% for teacher in teachers %}
+        <article class="teacher-profile-card">
+          <div class="teacher-profile-card__visual">
+            {% if teacher.photoUrl or teacher.photo_url %}
+              <img src="{{ teacher.photoUrl or teacher.photo_url }}" alt="Фото воспитателя" />
+            {% else %}
+              <div class="teacher-profile-fallback">
+                <span>{{ (teacher.name or 'Т')[:1] }}</span>
               </div>
+            {% endif %}
+            <div class="teacher-role-badge">{{ teacher.position or 'Воспитатель' }}</div>
+          </div>
+
+          <div class="teacher-profile-card__content">
+            <div class="teacher-profile-head">
               <div>
-                <a href="{{ url_for('teachers.edit_form', teacher_id=teacher.id) }}" class="btn btn-sm btn-outline-light">Редактировать</a>
-                <form method="post" action="{{ url_for('teachers.delete', teacher_id=teacher.id) }}" class="m-0 d-inline" onsubmit="event.stopPropagation()">
-                  <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить воспитателя?')">Удалить</button>
-                </form>
+                <span class="teacher-label">Профиль</span>
+                <h2>{{ teacher.name or 'Без имени' }}</h2>
               </div>
-            </li>
-            <li class="list-group-item">
-              <div><strong>Должность:</strong> {{ teacher.position or '-' }}</div>
-              <div>{{ teacher.description or '-' }}</div>
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
-    {% else %}
-      <p>Воспитатели не найдены.</p>
-    {% endif %}
-  </div>
+              <span class="teacher-id">ID: {{ teacher.id }}</span>
+            </div>
+
+            <div class="teacher-contact-grid">
+              <div class="teacher-contact-item">
+                <span>Email</span>
+                <strong>{{ teacher.email or '-' }}</strong>
+              </div>
+              <div class="teacher-contact-item">
+                <span>Телефон</span>
+                <strong>{{ teacher.phone or '-' }}</strong>
+              </div>
+            </div>
+
+            <div class="teacher-description-box">
+              <span>Описание</span>
+              <p>{{ teacher.description or 'Описание отсутствует.' }}</p>
+            </div>
+
+            <div class="teacher-profile-actions">
+              <a href="{{ url_for('teachers.edit_form', teacher_id=teacher.id) }}" class="btn btn-sm btn-outline-light teacher-btn-edit">Редактировать</a>
+              <form method="post" action="{{ url_for('teachers.delete', teacher_id=teacher.id) }}" class="m-0" onsubmit="event.stopPropagation()">
+                <button type="submit" class="btn btn-sm btn-outline-danger teacher-btn-delete" onclick="return confirm('Удалить воспитателя?')">Удалить</button>
+              </form>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="teachers-empty">
+      <h2>Воспитатели не найдены</h2>
+      <p>Добавьте первого педагога, чтобы его профиль появился в списке.</p>
+    </div>
+  {% endif %}
 {% endblock %}
