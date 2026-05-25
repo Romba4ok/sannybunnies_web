@@ -42,7 +42,7 @@
         </div>
         <div id="{{ day }}_items">
           <div class="schedule-item row g-2 align-items-center mb-2">
-            <div class="col-auto" style="min-width: 150px;">
+            <div class="col-auto schedule-time-col">
               <input type="time" class="form-control" name="{{ day }}_time[]" />
             </div>
             <div class="col">
@@ -74,7 +74,7 @@
       const row = document.createElement('div');
       row.className = 'schedule-item row g-2 align-items-center mb-2';
       row.innerHTML = `
-        <div class="col-auto" style="min-width: 150px;">
+        <div class="col-auto schedule-time-col">
           <input type="time" class="form-control" name="${day}_time[]" />
         </div>
         <div class="col">

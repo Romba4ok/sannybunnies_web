@@ -1,7 +1,5 @@
 import os
 
-# ХАК: Принудительно очищаем переменные эмулятора перед инициализацией,
-# чтобы Firestore SDK не пытался подключаться к локальному порту 9.
 os.environ.pop('FIRESTORE_EMULATOR_HOST', None)
 os.environ.pop('FIREBASE_AUTH_EMULATOR_HOST', None)
 os.environ.pop('FIREBASE_DATABASE_EMULATOR_HOST', None)
@@ -39,7 +37,6 @@ def init_firebase():
             )
         cred = credentials.Certificate(FIREBASE_CREDENTIALS)
         
-        # ИСПРАВЛЕНИЕ: Передаем имя бакета при инициализации, чтобы работал Storage
         firebase_app = initialize_app(cred, {
             'storageBucket': FIREBASE_STORAGE_BUCKET
         })
@@ -87,7 +84,6 @@ def iter_users_by_role(role):
 
 def iter_children_with_parent():
     db = get_firestore()
-    # Загрузка всех пользователей и групп один раз, чтобы избежать N+1 запросов
     user_docs = db.collection('users').stream(retry=FIRESTORE_RETRY, timeout=FIRESTORE_TIMEOUT)
     users_map = {doc.id: (doc.to_dict() or {}) for doc in user_docs}
 
@@ -269,12 +265,10 @@ def upload_photo_to_storage(file, folder_path):
         return None
     try:
         init_firebase()
-        # Метод bucket() теперь автоматически подхватит имя из initialize_app
         bucket = storage.bucket()
         blob_name = f"{folder_path}/{file.filename}"
         blob = bucket.blob(blob_name)
         
-        # Сбрасываем указатель файла в начало на случай, если его читали ранее
         if hasattr(file, 'seek'):
             file.seek(0)
             

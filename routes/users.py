@@ -32,7 +32,6 @@ def _save_photo(file, folder_path):
 @users_bp.route('/')
 @login_required
 def index():
-    # Отдаём минимальную страницу; данные подгружает JS через /users/data
     return stream_template('users/users.html', section='Пользователи')
 
 
@@ -45,7 +44,6 @@ def data():
     parents = [u for u in users if u.get('role') in ['parent', 'user']]
     children = get_children_with_parent()
 
-    # Сокращаем поля для передачи
     def slim(u):
         return {
             'id': u.get('id'),

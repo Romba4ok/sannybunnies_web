@@ -4,6 +4,7 @@ from template_utils import stream_template
 from firebase_admin_service import (
     create_document,
     delete_document,
+    get_collection_items,
     get_document,
     iter_collection_items,
     update_document,

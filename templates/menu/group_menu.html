@@ -1,38 +1,6 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-  <style>
-    .menu-card {
-      background: #1e2125 !important;
-      border: 1px solid #2d3035 !important;
-      border-radius: 12px !important;
-      overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .menu-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    }
-
-    .menu-card__img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-      border-bottom: 1px solid #2d3035;
-    }
-
-    .ingredient-badge {
-      background: #342a21 !important;
-      color: #ffc107 !important;
-      border: 1px solid #4d3f32 !important;
-      font-weight: 500;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      display: inline-block;
-    }
-  </style>
 
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
@@ -65,12 +33,12 @@
                       <h5 class="card-title text-white h6 mb-1 fw-semibold">{{ item.meal or 'Блюдо' }}</h5>
                       <span class="text-muted small">{{ item.time or '—' }}</span>
                     </div>
-                    <span class="badge bg-primary px-2 py-1" style="font-size: 0.75rem; font-weight: 500;">{{ item.kcal or '-' }} ккал</span>
+                    <span class="badge bg-primary px-2 py-1 kcal-badge">{{ item.kcal or '-' }} ккал</span>
                   </div>
                   <p class="card-text text-secondary small flex-grow-1 mb-3">{{ item.description or 'Описание отсутствует.' }}</p>
                   {% if item.ingredients %}
                     <div class="mt-auto">
-                      <div class="text-muted small mb-1" style="font-size: 0.75rem;">Состав:</div>
+                      <div class="text-muted small mb-1 ingredients-label">Состав:</div>
                       <div class="d-flex flex-wrap gap-1">
                         {% for ingredient in item.ingredients %}
                           <span class="ingredient-badge">{{ ingredient }}</span>
@@ -80,7 +48,7 @@
                   {% endif %}
                 </div>
                 <div class="card-footer bg-transparent border-top border-secondary d-flex justify-content-between gap-2 p-3">
-                  <a href="{{ url_for('menu.edit', menu_id=item.id) }}" class="btn btn-sm btn-outline-light w-50" style="border-color: #495057;">Редактировать</a>
+                  <a href="{{ url_for('menu.edit', menu_id=item.id) }}" class="btn btn-sm btn-outline-light w-50 menu-card-edit-btn">Редактировать</a>
                   <form method="post" action="{{ url_for('menu.delete', menu_id=item.id) }}" onsubmit="return confirm('Удалить блюдо?');" class="m-0 w-50">
                     <button type="submit" class="btn btn-sm btn-outline-danger w-100">Удалить</button>
                   </form>

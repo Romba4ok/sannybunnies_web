@@ -86,7 +86,7 @@ textarea {
   position: relative;
 }
 
-/* --- Sidebar --- */
+
 .sidebar {
   width: 280px;
   padding: 32px 24px;
@@ -140,12 +140,13 @@ textarea {
   transform: translateX(4px);
 }
 
-/* --- Content Area --- */
+
 .content {
   flex: 1;
   padding: 40px;
-  min-width: 0; /* Предотвращает распирание флекс-контейнера */
+  min-width: 0;
   position: relative;
+  transition: opacity 0.18s ease, transform 0.18s ease, filter 0.18s ease;
 }
 
 .content > .card {
@@ -158,24 +159,24 @@ textarea {
   z-index: 300;
   pointer-events: none;
   opacity: 0;
-  transform: translateY(-10px);
-  transition: opacity var(--transition), transform var(--transition);
+  transform: translateY(-14px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
 .page-loader__bar {
   height: 3px;
   width: 100%;
   overflow: hidden;
-  background: rgba(157, 111, 255, 0.12);
+  background: rgba(157, 111, 255, 0.1);
 }
 
 .page-loader__bar::before {
   content: "";
   display: block;
-  width: 42%;
+  width: 38%;
   height: 100%;
-  background: linear-gradient(90deg, var(--primary), #42d4ff, var(--warning));
-  animation: page-loader-bar 1.05s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, var(--primary), #42d4ff, transparent);
+  animation: page-loader-bar 0.95s ease-in-out infinite;
 }
 
 .collapse {
@@ -193,23 +194,23 @@ textarea {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-width: 250px;
-  padding: 14px 16px;
+  min-width: 220px;
+  padding: 12px 14px;
   border: 1px solid var(--border);
-  border-radius: 16px;
-  background: rgba(14, 13, 24, 0.92);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  border-radius: 14px;
+  background: rgba(14, 13, 24, 0.88);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .page-loader__spinner {
-  width: 30px;
-  height: 30px;
-  border: 3px solid rgba(255, 255, 255, 0.16);
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(255, 255, 255, 0.14);
   border-top-color: var(--primary);
   border-radius: 50%;
-  animation: page-loader-spin 0.8s linear infinite;
+  animation: page-loader-spin 0.75s linear infinite;
   flex: 0 0 auto;
 }
 
@@ -230,8 +231,11 @@ textarea {
   transform: translateY(0);
 }
 
-.is-page-loading .content > :not(.page-loader) {
-  filter: saturate(0.9);
+.is-page-loading .content {
+  filter: blur(1px) saturate(0.9);
+  opacity: 0.58;
+  pointer-events: none;
+  transform: translateY(4px);
 }
 
 @keyframes page-loader-bar {
@@ -264,7 +268,7 @@ textarea {
   color: #fff;
 }
 
-/* --- Cards --- */
+
 .card,
 .day-card,
 .group-card,
@@ -276,7 +280,7 @@ textarea {
 .interior-card {
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Чтобы картинки не вылезали за скругления */
+  overflow: hidden;
   background: linear-gradient(180deg, var(--card), rgba(14,13,24,0.95));
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -286,7 +290,7 @@ textarea {
   transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
 }
 
-/* Form card layout tweaks */
+
 .form-card {
   background: linear-gradient(180deg, #3E1E58 0%, #231228 100%);
   border: 1px solid #6C3CA4;
@@ -297,12 +301,12 @@ textarea {
   display: flex;
   flex-direction: column;
   margin: 0;
-  box-shadow: none; /* чтобы не дублировались тени внутри */
-  border: none; /* оставить визуально единый контейнер */
+  box-shadow: none;
+  border: none;
   background: transparent;
 }
 
-/* Скрыть внутреннюю серую область формы, показать только футер с кнопкой */
+
 .card > .form-card .card-body {
   display: block;
   padding: 24px;
@@ -453,7 +457,7 @@ textarea {
   }
 }
 
-/* Form controls styling to match dark card look */
+
 .form-control {
   background: rgba(255,255,255,0.02);
   border: 1px solid rgba(255,255,255,0.04);
@@ -485,7 +489,7 @@ textarea {
   .btn { width: 100%; }
 }
 
-/* --- Users page styles --- */
+
 .users-form .form-label {
   display: block;
   margin-bottom: 8px;
@@ -502,7 +506,7 @@ textarea {
   height: 44px;
 }
 
-/* File input needs its own spacing */
+
 .users-form input[type="file"] {
   height: auto;
   padding: 8px 12px;
@@ -511,7 +515,7 @@ textarea {
   border: 1px solid rgba(255,255,255,0.03);
 }
 
-/* Custom file input */
+
 .custom-file {
   width: 100%;
   display: flex;
@@ -553,7 +557,7 @@ textarea {
   max-width: 100px;
 }
 
-/* Make textarea taller but keep padding consistent */
+
 .users-form textarea.form-control {
   min-height: 96px;
   padding: 12px 14px;
@@ -564,7 +568,7 @@ textarea {
   border-radius: 12px;
 }
 
-/* Add padding to the whole users form so inputs don't touch edges */
+
 .users-form {
   padding: 18px;
   border-radius: 12px;
@@ -721,10 +725,10 @@ textarea {
 .user-actions .btn { margin-left: 8px }
 .user-actions form { display:inline-block; margin:0; }
 
-/* Children nested list styles */
+
 .children-group {
   margin-top: 12px;
-  margin-left: 48px; /* увеличенный отступ, чтобы явно показать вложенность */
+  margin-left: 48px;
   padding-left: 18px;
   border-left: 1px solid rgba(157,111,255,0.15);
   width: calc(100% - 48px);
@@ -734,8 +738,8 @@ textarea {
   background: rgba(255,255,255,0.01);
   padding: 12px 14px;
   border-radius: 12px;
-  margin-left: 6px; /* небольшой внутренний отступ, чтобы не прилипали к границе */
-  transform: translateX(20px); /* сдвиг влево относительно родителя */
+  margin-left: 6px;
+  transform: translateX(20px);
   transition: transform var(--transition);
 }
 
@@ -744,7 +748,7 @@ textarea {
   .user-actions { display:flex; gap:8px }
 }
 
-/* Layout: make the users form fields appear in a single row on wide screens */
+
 .users-form .row {
   display: flex;
   flex-wrap: wrap;
@@ -778,7 +782,7 @@ textarea {
 
 .card-body {
   padding: 24px;
-  flex: 1; /* Позволяет контенту карточки расти равномерно */
+  flex: 1;
 }
 
 .card-footer {
@@ -811,10 +815,10 @@ textarea {
   width: 100%;
   height: 220px;
   object-fit: cover;
-  border-radius: 0; /* Сброс, так как родитель имеет overflow: hidden */
+  border-radius: 0;
 }
 
-/* --- Buttons --- */
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -897,7 +901,7 @@ textarea {
   border-radius: 10px;
 }
 
-/* --- Forms --- */
+
 .form-box,
 .login-box {
   width: 100%;
@@ -954,7 +958,7 @@ textarea {
   resize: vertical;
 }
 
-/* --- Data Table --- */
+
 .table-responsive {
   width: 100%;
   overflow-x: auto;
@@ -976,7 +980,7 @@ textarea {
 .table td {
   padding: 16px 20px;
   border-bottom: 1px solid rgba(157,111,255,0.1);
-  white-space: nowrap; /* Защищает текст в таблицах от некрасивых переносов */
+  white-space: nowrap;
 }
 
 .table thead th {
@@ -993,7 +997,7 @@ textarea {
   background: rgba(157,111,255,0.04);
 }
 
-/* --- Lists --- */
+
 .list-group {
   list-style: none;
   padding: 0;
@@ -1003,7 +1007,7 @@ textarea {
   gap: 10px;
 }
 
-/* --- Groups grid and cards --- */
+
 .group-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -1041,18 +1045,18 @@ textarea {
 
 .group-card:hover { transform: translateY(-6px); box-shadow: 0 30px 70px rgba(0,0,0,0.6); border-color: #9d6fff }
 
-/* Color variations for cards */
+
 .group-grid .group-card:nth-child(3n+1) { background: linear-gradient(180deg, #3E1E58 0%, #231228 100%); border-color: #6C3CA4 }
 .group-grid .group-card:nth-child(3n+2) { background: linear-gradient(180deg, #2A3B5C 0%, #1A1420 100%); border-color: rgba(66,212,255,0.12) }
 .group-grid .group-card:nth-child(3n+3) { background: linear-gradient(180deg, #3A2A1E 0%, #17141B 100%); border-color: rgba(255,151,102,0.12) }
 
-/* Larger cards on wide screens */
+
 @media(min-width:1200px){
   .group-grid { grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); }
   .group-card { padding: 22px; min-height: 160px }
 }
 
-/* --- Group detail vertical layout --- */
+
 .group-detail-header {
   padding: 20px 24px;
   background: rgba(14, 12, 24, 0.88);
@@ -1230,7 +1234,7 @@ textarea {
   transform: translateX(4px);
 }
 
-/* --- Badges --- */
+
 .badge,
 .group-card__label,
 .ingredient-badge {
@@ -1271,7 +1275,7 @@ textarea {
   margin-bottom: 20px;
 }
 
-/* --- Interior Page Styles --- */
+
 .custom-accordion {
   width: 100%;
   padding-bottom: 40px;
@@ -1448,7 +1452,7 @@ textarea {
   color: #fff !important;
 }
 
-/* --- Menu Page Accordion Styles --- */
+
 #menuAccordion .accordion-header {
   padding: 18px 20px;
 }
@@ -1618,7 +1622,7 @@ textarea {
   transform: rotate(180deg);
 }
 
-/* --- Reviews Page Styles --- */
+
 .reviews-total {
   display: inline-flex;
   align-items: baseline;
@@ -1816,7 +1820,7 @@ textarea {
   color: rgba(255, 255, 255, 0.65);
 }
 
-/* --- FAQ Page Styles --- */
+
 .faq-total {
   display: inline-flex;
   align-items: baseline;
@@ -1975,7 +1979,7 @@ textarea {
   color: rgba(255, 255, 255, 0.65);
 }
 
-/* --- Requests Page Styles --- */
+
 .requests-total {
   display: inline-flex;
   align-items: baseline;
@@ -2243,7 +2247,7 @@ textarea {
   color: rgba(255, 255, 255, 0.65);
 }
 
-/* --- Teachers Page Styles --- */
+
 .teachers-total {
   display: inline-flex;
   align-items: baseline;
@@ -2460,7 +2464,7 @@ textarea {
   color: rgba(255, 255, 255, 0.65);
 }
 
-/* --- Groups Page Styles --- */
+
 .groups-total {
   display: inline-flex;
   align-items: baseline;
@@ -2666,7 +2670,7 @@ textarea {
   color: rgba(255, 255, 255, 0.65);
 }
 
-/* --- Kindergarten Info Page Styles --- */
+
 .kindergarten-status {
   display: inline-flex;
   align-items: baseline;
@@ -2832,7 +2836,7 @@ textarea {
   padding: 10px 20px;
 }
 
-/* --- Users Page Styles --- */
+
 .users-total {
   display: inline-flex;
   align-items: baseline;
@@ -3375,13 +3379,147 @@ textarea {
   }
 }
 
-/* --- Layout Grid System --- */
+#scheduleAccordion .accordion-header {
+  padding: 18px 20px;
+  gap: 10px;
+}
+
+#scheduleAccordion .day-card {
+  background: linear-gradient(180deg, rgba(25, 28, 40, 0.96), rgba(14, 16, 24, 0.98)) !important;
+  border: 1px solid rgba(159, 111, 255, 0.14) !important;
+  border-radius: 18px !important;
+  min-height: 100%;
+  padding: 18px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+#scheduleAccordion .day-card:hover {
+  border-color: rgba(159, 111, 255, 0.26) !important;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
+  transform: translateY(-4px);
+}
+
+#scheduleAccordion .day-card-title {
+  border-left: 3px solid #7c6fff;
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: 14px;
+  padding-left: 10px;
+}
+
+#scheduleAccordion .event-item {
+  align-items: center;
+  background: rgba(8, 10, 17, 0.5);
+  border: 1px solid rgba(159, 111, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: none;
+  display: flex !important;
+  flex-direction: row;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 10px 12px;
+}
+
+#scheduleAccordion .event-item:last-child {
+  border-bottom: 1px solid rgba(159, 111, 255, 0.1);
+}
+
+#scheduleAccordion .event-time-badge {
+  background: rgba(124, 111, 255, 0.18);
+  border: 1px solid rgba(124, 111, 255, 0.24);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 9px;
+}
+
+#scheduleAccordion .group-controls-wrapper .btn-delete-schedule {
+  background: rgba(255, 107, 122, 0.15);
+  border: 1px solid #ff6b7a !important;
+  border-radius: 10px !important;
+  color: #fff !important;
+  font-size: 0.85rem !important;
+  font-weight: 600;
+  padding: 8px 16px !important;
+}
+
+#scheduleAccordion .group-controls-wrapper .btn-delete-schedule:hover {
+  background: #ff6b7a !important;
+  border-color: #ff5566 !important;
+}
+
+.schedule-time-col {
+  min-width: 150px;
+}
+
+.menu-card {
+  background: #1e2125 !important;
+  border: 1px solid #2d3035 !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.menu-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  transform: translateY(-3px);
+}
+
+.menu-card__img {
+  border-bottom: 1px solid #2d3035;
+  height: 160px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.ingredient-badge {
+  background: #342a21 !important;
+  border: 1px solid #4d3f32 !important;
+  border-radius: 6px;
+  color: #ffc107 !important;
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 4px 8px;
+}
+
+.kcal-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.ingredients-label {
+  font-size: 0.75rem;
+}
+
+.menu-card-edit-btn {
+  border-color: #495057 !important;
+}
+
+.preview-photo {
+  border: 1px solid rgba(145, 94, 255, 0.3);
+  border-radius: 16px;
+  height: 100px;
+  max-height: 100px;
+  max-width: 100px;
+  object-fit: cover;
+  width: 100px;
+}
+
+.review-user-photo {
+  height: 40px;
+  object-fit: cover;
+  width: 40px;
+}
+
+
 .row {
   display: flex;
   flex-wrap: wrap;
   margin-right: -12px;
   margin-left: -12px;
-  row-gap: 24px; /* Автоматический отступ между рядами карточек */
+  row-gap: 24px;
 }
 
 .row > * {
@@ -3403,6 +3541,8 @@ textarea {
 
 .col-12 { flex: 0 0 100%; max-width: 100%; }
 .col-6  { flex: 0 0 50%; max-width: 50%; }
+.col { flex: 1 0 0%; max-width: 100%; }
+.col-auto { flex: 0 0 auto; width: auto; max-width: 100%; }
 
 @media (min-width: 768px) {
   .col-md-3 { flex: 0 0 25%; max-width: 25%; }
@@ -3422,7 +3562,7 @@ textarea {
   .col-xl-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
 }
 
-/* --- Utility Classes --- */
+
 .text-muted { color: var(--muted) !important; }
 .text-white, .text-light { color: #fff !important; }
 .bg-dark, .bg-secondary { background: rgba(13, 12, 22, 0.9) !important; }
@@ -3460,7 +3600,7 @@ textarea {
 .gap-2 { gap: .5rem !important; }
 .gap-3 { gap: 1rem !important; }
 
-/* --- Responsive Breakpoints (Планшеты и Мобильные) --- */
+
 @media (max-width: 992px) {
   .app {
     flex-direction: column;
@@ -3483,10 +3623,10 @@ textarea {
     flex-direction: row;
     overflow-x: auto;
     padding-bottom: 4px;
-    /* Скрываем стандартный скроллбар для аккуратности */
+
     -webkit-overflow-scrolling: touch;
   }
-  
+
   .sidebar nav::-webkit-scrollbar {
     display: none;
   }
@@ -3494,12 +3634,12 @@ textarea {
   .sidebar .nav-link {
     white-space: nowrap;
     padding: 10px 14px;
-    flex-shrink: 0; /* Не дает ссылкам сжиматься в кашу */
+    flex-shrink: 0;
   }
 
   .sidebar .nav-link:hover,
   .sidebar .nav-link.active {
-    box-shadow: inset 0 -3px 0 var(--primary); /* Линия снизу вместо левого края */
+    box-shadow: inset 0 -3px 0 var(--primary);
     transform: translateY(-2px);
   }
 
@@ -3533,11 +3673,11 @@ textarea {
     gap: 12px;
   }
 
-  /* Исправление ломающихся кнопок на мобильных */
-  .topbar .btn, 
-  .form-box .btn, 
+
+  .topbar .btn,
+  .form-box .btn,
   .login-box .btn {
-    width: 100%; /* Растягиваем только основные кнопки действий на экранах */
+    width: 100%;
   }
 
   .form-box,
@@ -3551,7 +3691,7 @@ textarea {
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .list-group-item > .d-flex,
   .list-group-item > div {
     width: 100%;

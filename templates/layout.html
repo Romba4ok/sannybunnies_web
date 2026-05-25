@@ -26,16 +26,6 @@
         </nav>
       </aside>
       <main class="content" id="appContent" aria-live="polite">
-        <div class="page-loader" id="pageLoader" aria-hidden="true">
-          <div class="page-loader__bar"></div>
-          <div class="page-loader__panel">
-            <div class="page-loader__spinner"></div>
-            <div>
-              <div class="page-loader__title">Загрузка</div>
-              <div class="page-loader__text">Данные открываются в этой же странице</div>
-            </div>
-          </div>
-        </div>
         <div class="topbar d-flex justify-content-between align-items-center mb-4 gap-3">
           <div>
             <h2 class="mb-0">{{ section }}</h2>
@@ -52,6 +42,16 @@
           {% block content %}{% endblock %}
         </div>
       </main>
+      <div class="page-loader" id="pageLoader" aria-hidden="true">
+        <div class="page-loader__bar"></div>
+        <div class="page-loader__panel">
+          <div class="page-loader__spinner"></div>
+          <div>
+            <div class="page-loader__title">Загрузка</div>
+            <div class="page-loader__text">Открываем раздел</div>
+          </div>
+        </div>
+      </div>
     </div>
     <script>
       if (typeof bootstrap === 'undefined') {

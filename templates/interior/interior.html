@@ -37,7 +37,7 @@
             </div>
 
             <div class="interior-controls-wrapper" onclick="event && event.stopPropagation();">
-              <a href="{{ url_for('interior.edit', interior_id=item.id) }}" onclick="event.stopPropagation();" class="btn btn-sm btn-outline-light px-3 interior-btn-edit" style="font-size: 0.85rem; border-radius: 10px; padding: 8px 16px !important;">Редактировать</a>
+              <a href="{{ url_for('interior.edit', interior_id=item.id) }}" onclick="event.stopPropagation();" class="btn btn-sm btn-outline-light px-3 interior-btn-edit">Редактировать</a>
               <form method="post" action="{{ url_for('interior.delete', interior_id=item.id) }}" onsubmit="event && event.stopPropagation(); return confirm('Удалить этот интерьер и все его фото?');" class="m-0">
                 <button type="submit" onclick="event.stopPropagation();" class="btn-delete-group">Удалить</button>
               </form>
@@ -82,7 +82,6 @@
   {% endif %}
 
   <script>
-    // Скрипт массового разворачивания/сворачивания групп интерьера
     function toggleAllInteriors(show) {
       const collapsibles = document.querySelectorAll('.custom-accordion-item .collapse');
       collapsibles.forEach(el => {

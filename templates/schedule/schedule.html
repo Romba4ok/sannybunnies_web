@@ -21,276 +21,6 @@
       'sunday': 'Воскресенье',
     } %}
 
-  <style>
-    /* Базовые контейнеры аккордеона */
-    .custom-accordion {
-      width: 100%;
-      padding-bottom: 50px;
-    }
-
-    .custom-accordion-item {
-      background-color: var(--card) !important;
-      border: 1px solid var(--border) !important;
-      border-radius: var(--radius) !important;
-      margin-bottom: 16px !important;
-      overflow: hidden !important;
-    }
-
-    /* Шапка спойлера группы */
-    .accordion-header {
-      position: relative;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .schedule-header-btn {
-      flex: 1;
-      min-width: 0;
-      background: linear-gradient(135deg, rgba(21, 150, 137, 0.1), rgba(246, 200, 95, 0.14)) !important;
-      color: var(--text) !important;
-      border: none !important;
-      padding: 16px 20px !important;
-      text-align: left;
-      box-shadow: none !important;
-      display: flex !important;
-      justify-content: space-between !important;
-      align-items: center !important;
-      transition: background-color 0.2s ease;
-    }
-
-    .schedule-controls-wrapper {
-      flex-shrink: 0;
-    }
-
-    .schedule-header-btn:hover {
-      background: linear-gradient(135deg, rgba(21, 150, 137, 0.17), rgba(246, 200, 95, 0.22)) !important;
-    }
-
-    .schedule-header-btn:not(.collapsed) {
-      border-bottom: 1px solid var(--border) !important;
-    }
-
-    /* Текстовый блок */
-    .schedule-title-wrapper {
-      display: flex;
-      flex-direction: column;
-      padding-right: 15px;
-    }
-
-    .schedule-title {
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: #14222b;
-    }
-
-    /* Кнопки управления */
-    .schedule-controls-wrapper {
-      display: flex !important;
-      align-items: center !important;
-      gap: 12px;
-      z-index: 10;
-      position: relative;
-    }
-
-    .btn-delete-schedule {
-      font-size: 0.8rem !important;
-      font-weight: 500;
-      border-radius: 6px !important;
-      padding: 6px 12px !important;
-      border: 1px solid rgba(227, 79, 95, 0.3) !important;
-      color: var(--danger) !important;
-      background: transparent;
-      transition: all 0.2s ease;
-    }
-    .btn-delete-schedule:hover {
-      background: var(--danger) !important;
-      color: #fff !important;
-    }
-
-    /* Контент внутри спойлера */
-    .schedule-collapse-body {
-      padding: 24px;
-      color: var(--text);
-      background-color: rgba(255, 255, 255, 0.72);
-    }
-
-    /* Плашки дней недели */
-    .day-card {
-      background: #ffffff !important;
-      border: 1px solid var(--border) !important;
-      border-radius: var(--radius) !important;
-      padding: 16px;
-      height: 100%;
-    }
-
-    .day-card-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #14313a;
-      border-left: 3px solid var(--accent);
-      padding-left: 10px;
-      margin-bottom: 14px;
-    }
-
-    /* Элементы событий внутри дня */
-    .event-item {
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .event-item:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-    .event-item:first-of-type {
-      padding-top: 0;
-    }
-
-    /* Бейдж времени */
-    .event-time-badge {
-      background-color: rgba(75, 159, 225, 0.12);
-      color: #1d6fae;
-      border: 1px solid rgba(75, 159, 225, 0.28);
-      font-size: 0.75rem;
-      font-weight: 500;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-
-    /* Анимация стрелки */
-    .chevron-icon {
-      transition: transform 0.2s ease;
-      flex-shrink: 0;
-    }
-
-    .schedule-header-btn:not(.collapsed) .chevron-icon {
-      transform: rotate(180deg);
-    }
-  </style>
-
-  <style>
-    #scheduleAccordion .accordion-header {
-      padding: 18px 20px;
-      gap: 16px;
-    }
-
-    #scheduleAccordion .schedule-header-btn {
-      background: rgba(23, 28, 37, 0.9) !important;
-      border: 1px solid rgba(159, 111, 255, 0.18) !important;
-      color: #fff !important;
-      padding: 10px 16px !important;
-      transition: background 0.2s ease, transform 0.2s ease;
-    }
-
-    #scheduleAccordion .schedule-header-btn:hover {
-      background: rgba(33, 38, 50, 0.98) !important;
-    }
-
-    #scheduleAccordion .schedule-title-wrapper {
-      align-items: center;
-      flex: 1;
-      gap: 6px;
-      justify-content: center;
-      margin-bottom: 0;
-      padding-right: 0;
-      text-align: center;
-    }
-
-    #scheduleAccordion .schedule-title {
-      color: #fff;
-      font-size: 1.2rem;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    #scheduleAccordion .schedule-title + .text-muted {
-      color: rgba(255, 255, 255, 0.65) !important;
-      text-align: center;
-    }
-
-    #scheduleAccordion .schedule-controls-wrapper {
-      display: flex !important;
-      align-items: center !important;
-      flex-shrink: 0;
-      gap: 10px;
-      position: relative;
-    }
-
-    #scheduleAccordion .schedule-collapse-body {
-      background: rgba(14, 16, 24, 0.95);
-      border-top: 1px solid rgba(159, 111, 255, 0.12);
-      color: #fff;
-      padding: 26px;
-    }
-
-    #scheduleAccordion .day-card {
-      background: linear-gradient(180deg, rgba(25, 28, 40, 0.96), rgba(14, 16, 24, 0.98)) !important;
-      border: 1px solid rgba(159, 111, 255, 0.14) !important;
-      border-radius: 18px !important;
-      padding: 18px;
-    }
-
-    #scheduleAccordion .day-card-title {
-      border-left: 3px solid #7c6fff;
-      color: #fff;
-      font-size: 1rem;
-      margin-bottom: 14px;
-      padding-left: 10px;
-    }
-
-    #scheduleAccordion .event-item {
-      background: transparent;
-      border: 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 0;
-      box-shadow: none;
-      display: flex !important;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      padding: 9px 0;
-    }
-
-    #scheduleAccordion .event-item:last-child {
-      border-bottom: 0;
-    }
-
-    #scheduleAccordion .event-time-badge {
-      background: rgba(124, 111, 255, 0.14);
-      border: 1px solid rgba(124, 111, 255, 0.22);
-      border-radius: 999px;
-      color: #eee7ff;
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 4px 9px;
-    }
-
-    #scheduleAccordion .schedule-btn-edit {
-      background: rgba(124, 111, 255, 0.12);
-      border-color: #7c6fff !important;
-      border-radius: 10px !important;
-      color: #fff !important;
-      font-size: 0.85rem;
-      padding: 8px 16px !important;
-    }
-
-    #scheduleAccordion .btn-delete-schedule {
-      background: rgba(255, 107, 122, 0.15);
-      border: 1px solid #ff6b7a !important;
-      border-radius: 10px !important;
-      color: #fff !important;
-      font-size: 0.85rem !important;
-      font-weight: 600;
-      padding: 8px 16px !important;
-    }
-
-    #scheduleAccordion .btn-delete-schedule:hover {
-      background: #ff6b7a !important;
-      border-color: #ff5566 !important;
-      color: #fff !important;
-    }
-  </style>
 
   {% if items %}
     <div class="custom-accordion" id="scheduleAccordion">
@@ -300,16 +30,16 @@
         <div class="custom-accordion-item">
           
           <div class="accordion-header">
-            <div class="schedule-header-btn collapsed"
+            <div class="group-header-btn collapsed"
                     role="button"
                     tabindex="0"
                     data-bs-toggle="collapse"
                     data-bs-target="#collapseSchedule{{ loop_idx }}"
                     aria-expanded="false">
               
-              <div class="schedule-title-wrapper">
-                <h2 class="schedule-title mb-1">{{ item.group_name or 'Группа без названия' }}</h2>
-                <span class="text-muted small fw-normal">Нажмите, чтобы открыть расписание на неделю</span>
+              <div class="group-title-wrapper">
+                <h2>{{ item.group_name or 'Группа без названия' }}</h2>
+                <span>Нажмите, чтобы открыть расписание на неделю</span>
               </div>
 
               <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#adb5bd" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -317,8 +47,8 @@
               </svg>
             </div>
 
-            <div class="schedule-controls-wrapper" onclick="event && event.stopPropagation();">
-              <a href="{{ url_for('schedule.edit', schedule_id=item.id) }}" onclick="event.stopPropagation();" class="btn btn-sm btn-outline-light px-3 schedule-btn-edit">Редактировать</a>
+            <div class="group-controls-wrapper" onclick="event && event.stopPropagation();">
+              <a href="{{ url_for('schedule.edit', schedule_id=item.id) }}" onclick="event.stopPropagation();" class="btn btn-sm btn-outline-light px-3">Редактировать</a>
               <form method="post" action="{{ url_for('schedule.delete', schedule_id=item.id) }}" onsubmit="event && event.stopPropagation(); return confirm('Удалить расписание?');" class="m-0">
                 <button type="submit" onclick="event.stopPropagation();" class="btn-delete-schedule">Удалить</button>
               </form>
@@ -326,9 +56,9 @@
           </div>
 
           <div id="collapseSchedule{{ loop_idx }}" class="collapse">
-            <div class="schedule-collapse-body">
+            <div class="group-collapse-body">
               
-              <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+              <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
                 {% for day, label in day_labels.items() %}
                   <div class="col">
                     <div class="day-card">
@@ -366,7 +96,6 @@
   {% endif %}
 
   <script>
-    // Функция пакетного скрытия и раскрытия всех групп расписания
     function toggleAllSchedules(show) {
       const collapsibles = document.querySelectorAll('.custom-accordion-item .collapse');
       collapsibles.forEach(el => {
